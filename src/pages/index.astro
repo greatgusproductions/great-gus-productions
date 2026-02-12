@@ -1,17 +1,100 @@
 ---
-
+import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title="Great Gus Productions">
+  <section style="text-align:center;">
+    <div class="hero-logo">
+      <img
+        src="/images/ggp-film-logo.jpg"
+        alt="Great Gus Productions Film Logo"
+      />
+    </div>
+  </section>
+
+  <section class="video-grid">
+    {[
+      { id: "C1m6VqW01qc", thumb: "/images/thumbnails/1t.jpg" },
+      { id: "-e2YhWVKSGY", thumb: "/images/thumbnails/2t.jpg" },
+      { id: "EpitfgZRKjA", thumb: "/images/thumbnails/3t.jpg" },
+      { id: "DTtNxdlicTc", thumb: "/images/thumbnails/4t.jpg" },
+      { id: "X30yUNbF9Q4", thumb: "/images/thumbnails/5t.jpg" },
+      { id: "V2J5x8Mvo9s", thumb: "/images/thumbnails/6t.jpg" },
+      { id: "mMlXYVMUce8", thumb: "/images/thumbnails/7t.jpg" },
+      { id: "HXZwlom_PFI", thumb: "/images/thumbnails/8t.jpg" },
+    ].map((video) => (
+      <div class="video-item">
+        <button class="video-thumb" data-id={video.id} aria-label="Play video">
+          <img src={video.thumb} alt="Video thumbnail" loading="lazy" />
+        </button>
+      </div>
+    ))}
+  </section>
+
+  <style>
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 45px 55px;
+      margin-top: 3.5rem;
+      width: 100%;
+    }
+
+    .video-item {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+    }
+
+    .video-thumb {
+      position: relative;
+      border: none;
+      background: none;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .video-thumb img {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      display: block;
+    }
+
+    
+
+    .video-thumb:hover img {
+      filter: brightness(0.70);
+    }
+
+	.video-thumb {
+  overflow: hidden;
+}
+
+.video-thumb img {
+  transition:
+    transform 0.35s ease,
+    opacity 0.45s ease;
+}
+
+.video-thumb:hover img {
+  transform: scale(1.02);
+}
+
+
+    .hero-logo img {
+      width: 100%;
+      max-width: 700px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+	.hero-logo {
+	  min-height: 420px; /* reserves space so grid can't jump upward */
+	  display: flex;
+	  align-items: center; 
+	  justify-content: center;
+	}
+
+
+  </style>
+</BaseLayout>

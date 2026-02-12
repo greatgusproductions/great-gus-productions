@@ -1,0 +1,530 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+const trailerId = "EpitfgZRKjA";
+---
+
+<BaseLayout title="High Note (2019)">
+
+<section class="film-hero fade-in">
+
+  <div class="video-wrapper">
+
+    <div class="video-thumb" role="button" tabindex="0" data-id={trailerId}>
+      <img 
+        src="/images/thumbnails/high-note-thumb.jpg"
+        alt="High Note Trailer"
+        loading="eager"
+      />
+
+      <div class="hero-actions">
+        <span class="hero-btn">
+          <span class="icon-circle">▶</span>
+          <span class="hero-text">Watch Trailer</span>
+        </span>
+
+        <a 
+          class="hero-btn"
+          href="https://watch.greatgusproductions.com/checkout/subscribe/purchase"
+          target="_blank" rel="noopener"
+        >
+          <span class="icon-circle">$</span>
+          <span class="hero-text">Subscribe</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="side-controls hidden" id="sideControls">
+
+      <a 
+        class="side-btn"
+        href="https://watch.greatgusproductions.com/checkout/subscribe/purchase"
+        onclick="window.open(this.href,'_blank','noopener,width=1200,height=800'); return false;"
+      >
+        <span class="side-icon">$</span>
+        <span class="side-label">$2.80</span>
+      </a>
+
+      <button class="side-btn info-btn">
+        <span class="side-icon">ⓘ</span>
+        <span class="side-label hover-only">Video Info</span>
+      </button>
+
+    </div>
+
+    <!-- PANEL now contained inside video frame -->
+    <div class="info-panel hidden" id="infoPanel">
+      <button class="close-panel">×</button>
+
+      <div class="panel-content">
+
+        <img class="poster" src="/images/posters/high-note-poster.jpg" alt="Poster" />
+
+        <div class="panel-text">
+
+          <h2>High Note (2019)</h2>
+
+          <p class="meta">
+            By Great Gus Productions &nbsp; | &nbsp; Dramedy Musical &nbsp; | &nbsp; Film &nbsp; | &nbsp; 1 hr 42 m
+          </p>
+
+          <p class="panel-synopsis">
+            Best friends Cliff and Otis intend to get rich quick by stealing from some of the most dangerous foes in the business: drug dealers. Get in, find the stash, and get out. Simple. They just didn't realize that the "bad guys" weren't really all that bad to begin with.
+          </p>
+
+          <hr>
+
+          <h3>Cast</h3>
+            <div class="two-col">
+
+                <div>
+                    Chris<br><em>Tyler Roy Roberts</em><br><br>
+                    Otis<br><em>Sam Olive</em><br><br>
+                    Klaus<br><em>Mason Turnage</em><br><br>
+                    Swisher<br><em>Ben Buehler</em><br><br>
+                    Maija<br><em>Jennifer Gustafson</em><br><br>
+                    Mehmet<br><em>Edgar Ochoa</em><br><br>
+                    McKayla<br><em>Emily Bylin</em><br><br>
+                    Charlotte<br><em>Lindsay Gustafson</em><br><br>
+                    Petra<br><em>Stevie Mae</em><br><br>
+                </div>
+
+                 <div>
+                     Jocelyn<br><em>Kennedy Stinson</em><br><br>
+                     Cliff<br><em>Erik Nash</em><br><br>
+                     Fowlkes<br><em>Bo Turnage</em><br><br>
+                     Mikey<br><em>Eddie Nash</em><br><br>
+                     Aaron<br><em>Ty Boice</em><br><br>
+                     Jesus<br><em>Chris Griffo</em><br><br>
+                     Charlie<br><em>Weston Hedin</em><br><br>
+                     Dana<br><em>Kim Mapstead</em><br><br>
+                     Young Cliff<br><em>Alex McIntire</em><br><br>
+                 </div>
+
+            </div>
+
+
+
+          <hr>
+
+          <h3>Crew</h3>
+            <div class="two-col">
+
+                <div>
+                    Director<br><em>David Gustafson</em><br><br>
+                    Writers<br><em>David Gustafson</em><br>
+                    <em>Jacob Royce Gustafson</em><br><br>
+                    Cinematographer<br><em>Carl Billington</em><br><br>
+                    Composer<br><em>Philip Lassiter</em>
+                </div>
+
+                <div>
+                     Producers<br><em>Amy Gustafson</em><br>
+                 <em>Jacob Royce Gustafson</em><br>
+                 <em>Samuel J. Gustafson</em><br><br>
+                Editors<br><em>Carl Billington</em><br>
+                 <em>Amy Gustafson</em><br>
+                 <em>Jacob Royce Gustafson</em><br>
+                <em>Jack Stine</em>
+                 </div>
+
+            </div>
+
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="film-details fade-in">
+
+  <h1>High Note (2019)</h1>
+
+  <p class="synopsis">
+    Best friends Cliff and Otis intend to get rich quick by stealing from some of the most dangerous foes in the business: drug dealers. Get in, find the stash, and get out. Simple. They just didn't realize that the "bad guys" weren't really all that bad to begin with.
+  </p>
+
+  <p class="rating-note">
+    Rated for Mature Audiences Only
+  </p>
+
+  <div class="reviews-center">
+    <a 
+      class="reviews-btn"
+      href="/high-note-reviews"
+      target="_blank"
+    >
+      External Reviews
+    </a>
+  </div>
+
+</section>
+
+
+<section class="film-comments fade-in">
+  <div id="disqus_thread"></div>
+</section>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const infoBtn = document.querySelector(".info-btn") as HTMLButtonElement | null;
+  const panel = document.getElementById("infoPanel");
+  const closeBtn = document.querySelector(".close-panel") as HTMLButtonElement | null;
+  const sideControls = document.getElementById("sideControls");
+
+  if(infoBtn && panel){
+  infoBtn.onclick = () => {
+    panel.classList.remove("hidden");
+    document.body.classList.add("panel-open");
+  };
+}
+
+if(closeBtn && panel){
+  closeBtn.onclick = () => {
+    panel.classList.add("hidden");
+    document.body.classList.remove("panel-open");
+  };
+}
+
+
+  document.querySelectorAll<HTMLButtonElement>(".video-thumb").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.id || "";
+      const iframe = document.createElement("iframe");
+      iframe.src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
+      iframe.allow = "autoplay; encrypted-media";
+      iframe.allowFullscreen = true;
+      iframe.style.width = "100%";
+      iframe.style.aspectRatio = "16/9";
+      iframe.style.border = "0";
+      btn.replaceWith(iframe);
+
+      if(sideControls){
+        sideControls.classList.remove("hidden");
+      }
+    });
+  });
+
+});
+</script>
+
+
+<script>
+  var disqus_config = function () {
+  // @ts-ignore
+  this.page.url = window.location.href;
+  // @ts-ignore
+  this.page.identifier = "high-note";
+};
+
+
+  (function() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://greatgusproductions.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', Date.now().toString());
+    (d.head || d.body).appendChild(s);
+  })();
+</script>
+
+
+<style>
+
+:root{
+  --accent:#f3d806;
+}
+
+.fade-in{
+  opacity:0;
+  transform:translateY(20px);
+  animation:fadeUp .9s ease forwards;
+}
+
+@keyframes fadeUp{
+  to{ opacity:1; transform:translateY(0); }
+}
+
+/* VIDEO */
+
+.video-wrapper{
+  max-width:960px;
+  margin:40px auto;
+  position:relative;
+}
+
+.video-thumb{
+  border:none;
+  background:none;
+  padding:0;
+  width:100%;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+}
+
+.video-thumb img{
+  width:100%;
+  border-radius:10px;
+  display:block;
+  filter:brightness(1.1) contrast(1.15) saturate(.95) drop-shadow(0 0 0 rgba(0,0,0,0.01))hue-rotate(-5deg); 
+  box-shadow:0 6px 18px rgba(0,0,0,.35);
+  outline:1px solid rgba(255,255,255,.04);
+}
+
+.video-thumb::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background-image:url("https://grainy-gradients.vercel.app/noise.svg");
+  opacity:.12;
+  mix-blend-mode:overlay;
+}
+
+/* HERO BUTTONS */
+
+.hero-actions{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  display:flex;
+  gap:40px;
+  font-family:Helvetica, Arial, sans-serif;
+  font-weight:300;
+  font-size:21px;
+}
+
+.hero-btn{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:white;
+  cursor:pointer;
+  text-decoration:none;
+}
+
+.hero-text{
+  border-bottom:1px solid white;
+  padding-bottom:2px;
+}
+
+.icon-circle{
+  width:36px;
+  height:36px;
+  border:2px solid white;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:16px;
+}
+
+/* SIDE CONTROLS */
+
+.side-controls{
+  position:absolute;
+  top:10px;
+  right:-128px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:2px;
+  width:120px;
+  font-family:Helvetica, Arial, sans-serif;
+}
+
+.hidden{ display:none; }
+
+.side-btn{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:13px;
+  color:white;
+  opacity:.75;
+  text-decoration:none;
+  background:none;
+  border:none;
+  cursor:pointer;
+  width:90px;
+  line-height:1.1;
+}
+
+.side-icon{
+  width:11px;
+  display:inline-block;
+  text-align:center;
+  font-size:11px;
+  line-height:1;
+}
+
+
+
+.side-btn:hover{ opacity:1; }
+
+.side-label{
+  opacity:1;
+}
+
+.hover-only{
+  opacity:0;
+  transition:opacity .2s ease;
+}
+
+.side-btn:hover .hover-only{
+  opacity:1;
+}
+
+
+/* DETAILS */
+
+.film-details{
+  max-width:960px;
+  margin:40px auto;
+  text-align:left;
+}
+
+.film-details h1{
+  color:var(--accent);
+  font-family:'Overlock',cursive;
+  font-weight:100;
+  font-size:32px;
+}
+
+.synopsis{
+  font-size:16px;
+  font-weight:300;
+  line-height:1.7;
+  color:#f4f4f4;
+}
+
+.rating-note{
+  margin-top:10px;
+  font-weight:300;
+  opacity:.6;
+}
+
+/* REVIEWS + DISQUS ALIGNMENT */
+
+.reviews-center{
+  text-align:center;
+  margin-top:30px;
+}
+
+.reviews-btn,
+.reviews-btn:visited,
+.reviews-btn:hover,
+.reviews-btn:active{
+  color:var(--accent);
+  text-decoration:none;
+  font-family:'Overlock',cursive;
+}
+
+.film-comments{
+  max-width:960px;
+  margin:130px auto 110px auto;
+  text-align:center;
+}
+
+#disqus_thread{
+  max-width:960px;
+  margin:0 auto;
+}
+
+#disqus_thread img{
+  filter:grayscale(100%) brightness(.9);
+}
+
+/* PANEL INSIDE VIDEO */
+
+.info-panel{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.92);
+  backdrop-filter:blur(8px);
+  z-index:50;
+}
+
+.panel-content{
+  display:flex;
+  gap:30px;
+  padding:30px 30px 0px 30px;
+  height:100%;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+}
+
+.poster{
+  width:auto;
+  max-width:260px;
+  height:auto;
+  object-fit:contain;
+  align-self:flex-start;
+  margin-top:10px;
+}
+
+body.panel-open{
+  overflow:hidden;
+}
+
+.panel-text{
+  color:white;
+  max-width:600px;
+  font-size:14px;
+  font-weight:300;
+  padding-bottom:100px;
+}
+
+.meta{
+  opacity:.75;
+  margin:8px 0 14px;
+  font-size:13px;
+}
+
+.panel-synopsis{
+  line-height:1.6;
+  opacity:.9;
+}
+
+.two-col{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+hr{
+  border:none;
+  border-top:1px solid rgba(255,255,255,.15);
+  margin:24px 0;
+}
+
+.close-panel{
+  position:absolute;
+  top:20px;
+  right:20px;
+  font-size:28px;
+  background:none;
+  border:none;
+  color:white;
+  cursor:pointer;
+}
+
+/* FILM GRAIN */
+
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  opacity:.07;
+  background-image:url("https://grainy-gradients.vercel.app/noise.svg");
+}
+
+</style>
+
+</BaseLayout>

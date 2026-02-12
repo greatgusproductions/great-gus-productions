@@ -1,0 +1,94 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="About | Great Gus Productions">
+
+<section class="about-section">
+  <div class="about-grid">
+
+    <div class="about-text">
+      <h1>
+        We Are a Young & Creative<br />
+        Film Production Company
+      </h1>
+
+      <p>
+       We're bringing native voices into filmmaking, and it is our hope that you join us in sharing the stories that shape us. Our goal: to empower individuals into finding the means and/or resources to create their own works of art.
+      <p>
+        We are based in the Pacific Northwest, we don't know what we are doing half the time, and that is just the way we like it. Let's go save the world.
+      </p>
+    </div>
+
+    <div class="about-image">
+      <img src="/images/about.jpg" alt="Behind the scenes filming" />
+    </div>
+
+  </div>
+</section>
+
+<style>
+.about-section {
+  margin-top: -5px;
+  margin-bottom: 50px;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 44px;
+  align-items: start;
+}
+
+
+.about-text h1 {
+  font-family: "Dancing Script", cursive;
+  font-size: 46px;
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: 0.02em;
+  margin-bottom: 80px;
+  margin-top: 50px;
+  margin-left: 22px;
+  color: #f3f3f3;
+}
+
+
+.about-text p {
+  font-size: 14px;
+  line-height: 1.4;
+  max-width: 520px;
+  margin-bottom: 20px;
+  margin-left: 100px;
+  color: #d0d0d0;
+}
+
+.about-image img {
+  width: 100%;
+  border-radius: 5px;
+  display: block;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.55);
+  filter: contrast(1.05) brightness(0.96);
+  transition: transform 0.35s ease, filter 0.35s ease;
+}
+
+
+.about-image {
+  margin-top: 0px;
+  margin-right: 21px;
+}
+
+
+@media (max-width: 900px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .about-text h1 {
+    font-size: 36px;
+  }
+}
+</style>
+
+</BaseLayout>

@@ -1,0 +1,399 @@
+---
+const { title = "Great Gus Productions" } = Astro.props;
+const currentYear = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Overlock:wght@700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400&display=swap" rel="stylesheet" />
+
+
+    <link rel="preload" as="image" href="/images/thumbnails/1t.jpg" />
+    <link rel="preload" as="image" href="/images/thumbnails/2t.jpg" />
+
+
+    <style>
+      :root {
+        --bg: #000;
+        --fg: #fff;
+        --muted: #aaa;
+        --accent: #f3d806;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-family: Helvetica, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--fg);
+      }
+
+      header {
+        display: flex;
+        justify-content: center;
+        border-bottom: 1px solid #222;
+        position: relative;
+        z-index: 1000;
+      }
+
+      main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1.5rem 2rem 4rem;
+      }
+
+      footer {
+        border-top: 1px solid #222;
+        color: var(--muted);
+        text-align: center;
+        padding: 2rem;
+        font-size: 11px;
+      }
+
+      .site-header {
+        padding: 24px 80px;
+      }
+
+      .nav-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 880px;
+        width: 100%;
+      }
+
+      .site-name {
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 41px;
+        font-weight: 290;
+        line-height: 1.00;
+        text-decoration: none;
+        color: white;
+        margin-right: 41px;
+      }
+
+      .main-nav {
+        display: flex;
+        gap: 28px;
+        align-items: center;
+      }
+
+      .main-nav a {
+        font-family: 'Overlock', cursive;
+        font-size: 17px;
+        font-weight: 100;
+        text-decoration: none;
+        color: white;
+        opacity: 0.7;
+        padding-bottom: 5px;
+      }
+
+      .main-nav a:hover {
+        opacity: 1;
+      }
+
+      .main-nav a.active {
+        opacity: 1;
+        border-bottom: 2px solid var(--accent);
+        text-decoration:none;
+        border-bottom:2px solid #f3d806;
+        padding-bottom:2px;
+      }
+
+      .dropdown {
+        display: flex;
+        align-items: center;
+        position: relative;
+      }
+
+      .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        margin-top: 8px;
+        background: black;
+        border: 1px solid rgba(255,255,255,0.15);
+        padding: 12px 0;
+        display: none;
+        min-width: 160px;
+        z-index: 999;
+      }
+
+      .dropdown::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        height: 12px;
+      }
+
+
+      .dropdown-menu a {
+        display: block;
+        padding: 8px 16px;
+        white-space: nowrap;
+      }
+
+      .dropdown:hover .dropdown-menu,
+      .dropdown-menu:hover {
+        display: block;
+      }
+
+      @media (max-width: 768px) {
+        .video-grid {
+          grid-template-columns: 1fr;
+          gap: 42px;
+          margin-top: 4rem;
+        }
+      }
+      .video-thumb:focus-visible {
+          outline: 2px solid var(--accent);
+          outline-offset: 4px;
+      }
+     
+      .site-footer {
+          position: relative;
+          padding: 36px 20px;
+          text-align: center;
+          background: #000;
+          font-size: 10px;
+          color: #fff;
+      }
+
+      .footer-content {
+            max-width: 900px;
+            margin: 0 auto;
+      }
+
+      .footer-copy,
+      .footer-tagline,
+      .footer-email {
+            margin: 0;               /* NO gaps between the 3 lines */
+            line-height: 1.4;
+            color: #fff;
+      }
+
+      .footer-email a {
+            color: #fff;             /* kill blue */
+            text-decoration: none;
+      }
+
+      .footer-email a:hover {
+            text-decoration: underline;
+      }
+
+/* ONE gap before links */
+      .footer-links {
+            margin-top: 14px;        /* this is the single gap */
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            flex-wrap: wrap;
+      }
+
+      .footer-links a {
+            color: #fff;             /* kill blue */
+            text-decoration: none;
+      }
+
+      .footer-links a:hover {
+            text-decoration: underline;
+      }
+
+      .footer-social {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            display: flex;
+            gap: 14px;
+      }
+
+      .footer-social a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+      }
+
+      .footer-social svg {
+            width: 14px;
+            height: 14px;
+            fill: #fff;
+            opacity: 0.8;
+            transition: opacity 0.15s ease;
+      }
+
+      .footer-social a:hover svg {
+            opacity: 1;
+      }
+
+      .footer-social {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 14px;
+      }
+
+      .footer-social a svg {
+            width: 18px;
+            height: 18px;
+            fill: #fff;
+            opacity: 0.75;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+      }
+
+      .footer-social a:hover svg {
+            opacity: 1;
+            transform: scale(1.1);
+      }
+
+      @media (max-width: 768px) {
+      .footer-social {
+            position: static;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="nav-inner">
+        <a href="/" class="site-name">
+          Great Gus<br />Productions
+        </a>
+
+        <nav class="main-nav">
+          <a href="/" class={Astro.url.pathname === "/" ? "active" : ""}>Home</a>
+          <a href="/the-powwow"
+            class={Astro.url.pathname.startsWith("/the-powwow") ? "active" : ""}>
+            The Powwow
+          </a>
+
+          <a href="/beyond-the-shadows"
+            class={Astro.url.pathname.startsWith("/beyond-the-shadows") ? "active" : ""}>
+            Beyond the Shadows
+          </a>
+
+          <a href="/high-note"
+            class={Astro.url.pathname.startsWith("/high-note") ? "active" : ""}>
+            High Note
+          </a>
+
+
+          <div class="dropdown">
+            <a href="/about" class={Astro.url.pathname.startsWith("/about") ? "active" : ""}>About</a>
+            <div class="dropdown-menu">
+              <a href="/about/shop">Shop</a>
+              <a href="/about/blog">Blog</a>
+              <a href="/about/scripts">Scripts</a>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+  <div class="footer-content">
+    <p class="footer-copy">
+      © 2018–{currentYear} GREAT GUS PRODUCTIONS LLC. All Rights Reserved.
+    </p>
+
+    <p class="footer-tagline">
+      Your Independent Film Company from Washington State
+    </p>
+
+    <p class="footer-email">
+      <a href="mailto:greatgusproductions@gmail.com">
+        greatgusproductions@gmail.com
+      </a>
+    </p>
+
+    <nav class="footer-links">
+      <a href="/contact">Contact Us</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms &amp; Conditions</a>
+      <a href="/we-do-not-sell">We Do Not Sell Personal Information</a>
+    </nav>
+
+    <div class="footer-social">
+  <a href="https://www.youtube.com/@greatgusproductions" target="_blank" aria-label="YouTube">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M23.5 6.2s-.2-1.7-.8-2.4c-.8-.8-1.7-.8-2.1-.9C17.7 2.7 12 2.7 12 2.7h0s-5.7 0-8.6.2c-.4.1-1.3.1-2.1.9-.6.7-.8 2.4-.8 2.4S0 8.1 0 10v1.9c0 1.9.5 3.8.5 3.8s.2 1.7.8 2.4c.8.8 1.9.8 2.4.9 1.7.2 7.3.2 7.3.2s5.7 0 8.6-.2c.4-.1 1.3-.1 2.1-.9.6-.7.8-2.4.8-2.4s.5-1.9.5-3.8V10c0-1.9-.5-3.8-.5-3.8zM9.5 14.5V7.5l6.3 3.5-6.3 3.5z"/>
+    </svg>
+  </a>
+
+  <a href="https://www.instagram.com/greatgusproductions/" target="_blank" aria-label="Instagram">
+    <svg viewBox="0 0 24 24"><path d="M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5zm5 5.5A4.5 4.5 0 1016.5 12 4.5 4.5 0 0012 7.5zm6-1.1a1.1 1.1 0 11-1.1-1.1 1.1 1.1 0 011.1 1.1z"/></svg>
+  </a>
+
+  <a href="https://x.com/ProductionsGus" target="_blank" aria-label="X">
+    <svg viewBox="0 0 24 24"><path d="M18.2 2H21l-6.2 7.1L22 22h-6.3l-5-6.4L4.9 22H2l6.6-7.6L2 2h6.4l4.6 5.9L18.2 2z"/></svg>
+  </a>
+
+  <a href="https://www.tiktok.com/@greatgusproductions" target="_blank" aria-label="TikTok">
+    <svg viewBox="0 0 24 24"><path d="M17 1h-3v14.5a3.5 3.5 0 11-3.5-3.5c.5 0 1 .1 1.5.3V9.2a6.5 6.5 0 10 4.5 6.3V6.2a7.5 7.5 0 004.5 1.5V4.8A4.5 4.5 0 0117 1z"/></svg>
+  </a>
+</div>
+
+
+  </div>
+</footer>
+
+
+
+
+    <script is:inline>
+      document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".video-thumb img").forEach((img) => {
+          const btn = img.closest(".video-thumb");
+          if (!btn) return;
+
+          if (img.complete) {
+            btn.classList.add("is-loaded");
+          } else {
+            img.addEventListener("load", () => {
+              btn.classList.add("is-loaded");
+            });
+          }
+        });
+      });
+
+      document.addEventListener("click", (e) => {
+        const btn = e.target.closest(".video-thumb");
+        if (!btn) return;
+
+        const id = btn.dataset.id;
+        if (!id) return;
+
+        const iframe = document.createElement("iframe");
+        iframe.src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0&modestbranding=1`;
+        iframe.allow =
+          "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+        iframe.allowFullscreen = true;
+        iframe.style.width = "100%";
+        iframe.style.aspectRatio = "16 / 9";
+        iframe.style.border = "0";
+
+        btn.replaceWith(iframe);
+      });
+    </script>
+  </body>
+</html>
