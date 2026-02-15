@@ -50,11 +50,12 @@ const trailerId = "-e2YhWVKSGY";
         href="https://watch.greatgusproductions.com/thepowwow/videos/thepowwow"
         onclick="window.open(this.href,'_blank','noopener,width=1200,height=800'); return false;"
       >
-        <span class="icon-circle">
-  <svg viewBox="0 0 24 24" width="14" height="14" fill="white">
-    <polygon points="5,3 19,12 5,21"></polygon>
-  </svg>
-</span>
+       <span class="side-icon">
+        <svg viewBox="0 0 24 24" fill="white">
+        <polygon points="5,3 19,12 5,21"></polygon>
+      </svg>
+    </span>
+
 
         <span class="side-label">Watch Movie</span>
       </a>
@@ -395,13 +396,20 @@ if(closeBtn && panel){
   line-height:1.4;
 }
 
-.side-icon{
+.side-icon {
   width:11px;
-  display:inline-block;
-  text-align:center;
-  font-size:11px;
-  line-height:1;
+  height:11px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
+
+.side-icon svg {
+  width:14px;
+  height:14px;
+  display:block;
+}
+
 
 
 
