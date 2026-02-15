@@ -80,15 +80,31 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
 
 @media (max-width: 900px) {
+
   .about-grid {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: 28px;
   }
 
   .about-text h1 {
-    font-size: 36px;
+    font-size: 34px;
+    margin: 20px 0 20px 0;
+    text-align: center;
   }
+
+  .about-text p {
+    margin: 0 auto 18px auto;
+    padding: 0 10px;
+    text-align: left;
+    max-width: 520px;
+  }
+
+  .about-image {
+    margin: 0;
+  }
+
 }
+
 </style>
 
 </BaseLayout>

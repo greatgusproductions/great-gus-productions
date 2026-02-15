@@ -52,6 +52,13 @@ const currentYear = new Date().getFullYear();
         padding: 1.5rem 2rem 4rem;
       }
 
+      @media (max-width:768px){
+      main{
+        padding:1rem 1rem 3rem;
+      }
+    }
+
+
       footer {
         border-top: 1px solid #222;
         color: var(--muted);
@@ -63,6 +70,27 @@ const currentYear = new Date().getFullYear();
       .site-header {
         padding: 24px 80px;
       }
+
+      @media (max-width: 768px) {
+
+      .site-header {
+        padding: 20px 16px;
+        text-align: center;
+      }
+
+      .nav-inner {
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .main-nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 18px;
+      }
+
+    }
+
 
       .nav-inner {
         display: flex;
@@ -79,7 +107,7 @@ const currentYear = new Date().getFullYear();
         line-height: 1.00;
         text-decoration: none;
         color: white;
-        margin-right: 41px;
+        margin-right: 0px;
       }
 
       .main-nav {
@@ -125,7 +153,7 @@ const currentYear = new Date().getFullYear();
         border: 1px solid rgba(255,255,255,0.15);
         padding: 12px 0;
         display: none;
-        min-width: 160px;
+        min-width: 80px;
         z-index: 999;
       }
 
@@ -145,10 +173,15 @@ const currentYear = new Date().getFullYear();
         white-space: nowrap;
       }
 
-      .dropdown:hover .dropdown-menu,
-      .dropdown-menu:hover {
+      .dropdown-menu.open {
         display: block;
       }
+
+
+      .dropdown:hover .dropdown-menu {
+        display: block;
+      }
+
 
       @media (max-width: 768px) {
         .video-grid {
@@ -193,7 +226,7 @@ const currentYear = new Date().getFullYear();
             text-decoration: underline;
       }
 
-/* ONE gap before links */
+                                    /* ONE gap before links */
       .footer-links {
             margin-top: 14px;        /* this is the single gap */
             display: flex;
@@ -266,8 +299,97 @@ const currentYear = new Date().getFullYear();
         }
       }
 
+      .review-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 28px;
+            margin-top: 50px;
+      }
+
+      .review-button {
+            display: block;
+            text-align: center;
+            padding: 18px 20px;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            text-decoration: none;
+            font-family: 'Overlock', cursive;
+            letter-spacing: 1px;
+            transition: all 0.18s ease;
+      }
+
+      .review-button:hover {
+            background: rgba(243,216,6,0.08);
+            transform: translateY(-2px);
+      }
+
+      .review-invite {
+            margin-top: 70px;
+            text-align: center;
+            color: #bbb;
+            font-size: 14px;
+      }
+
+      @media (max-width:768px){
+
+      .nav-inner{
+            flex-direction:column;
+            gap:16px;
+      }
+
+      .main-nav{
+            flex-wrap:wrap;
+            justify-content:center;
+            gap:14px;
+      }
+
+      .site-name{
+            font-size:30px;
+            text-align:center;
+      }
+
+    }
+
     </style>
-  </head>
+  
+</head>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const dropdown = document.querySelector(".dropdown");
+  const trigger = dropdown?.querySelector("a");
+  const menu = document.querySelector(".dropdown-menu");
+
+  if (!dropdown || !menu || !trigger) return;
+
+  // Tap About
+  trigger.addEventListener("click", (e) => {
+    if (window.innerWidth <= 768) {
+
+      // If menu is closed → open it and stop navigation
+      if (!menu.classList.contains("open")) {
+        e.preventDefault();
+        e.stopPropagation();
+        menu.classList.add("open");
+      }
+
+      // If menu already open → allow normal navigation to /about
+    }
+  });
+
+  // Close menu when tapping outside
+  document.addEventListener("click", (e) => {
+    if (window.innerWidth <= 768) {
+      if (!dropdown.contains(e.target as Node)) {
+        menu.classList.remove("open");
+      }
+    }
+  });
+});
+</script>
+
+
+
 
   <body>
     <header class="site-header">
@@ -295,7 +417,7 @@ const currentYear = new Date().getFullYear();
 
 
           <div class="dropdown">
-            <a href="/about" class={Astro.url.pathname.startsWith("/about") ? "active" : ""}>About</a>
+           <a href="/about" tabindex="0">About</a>
             <div class="dropdown-menu">
               <a href="/about/shop">Shop</a>
               <a href="/about/blog">Blog</a>
@@ -356,9 +478,6 @@ const currentYear = new Date().getFullYear();
 
   </div>
 </footer>
-
-
-
 
     <script is:inline>
       document.addEventListener("DOMContentLoaded", () => {

@@ -94,6 +94,18 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 	  align-items: center; 
 	  justify-content: center;
 	}
+	
+	@media (max-width: 768px) {
+  .hero-logo {
+    min-height: 240px;   /* tighter spacing */
+    padding: 0px 0;
+  }
+
+  .hero-logo img {
+    max-width: 85%;
+	
+  }
+}
 
 
   </style>

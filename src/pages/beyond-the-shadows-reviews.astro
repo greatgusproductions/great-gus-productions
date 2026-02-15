@@ -1,0 +1,96 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Beyond the Shadows External Reviews">
+
+<h1 style="text-align:center; color:var(--accent);">
+Beyond the Shadows External Reviews
+</h1>
+
+<p style="text-align:center; color:white; margin-top:12px; font-size:18px;">
+Independent reviews help audiences discover independent film.
+</p>
+
+<div class="review-grid">
+
+<a class="review-button" href="https://filmcarnage.com/2020/06/29/review-beyond-the-shadows/" target="_blank">Film Carnage →</a>
+
+<a class="review-button" href="https://donshorrorworld.blogspot.com/2020/07/beyond-shadows-2020-by-david-gustafson.html" target="_blank">Don’s World of Horror and Exploitation →</a>
+
+<a class="review-button" href="https://www.youtube.com/watch?v=0pnFTB42HUI&t=311s&ab_channel=GeekLegionofDoom" target="_blank">Geek Legion of Doom →</a>
+
+<a class="review-button" href="http://www.searchmytrash.com/movies/beyondtheshadows%282020%29.shtml" target="_blank">Search My Trash →</a>
+
+<a class="review-button" href="https://rue-morgue.com/movie-review-theres-nothing-to-see-beyond-the-shadows/" target="_blank">Rue Morgue →</a>
+
+<a class="review-button" href="https://indiehorrorfilms.blogspot.com/2020/05/review-beyond-shadows.html?m=0" target="_blank">Indie Horror Films →</a>
+
+</div>
+
+<p style="text-align:center; margin-top:70px; color:white; opacity:.75;">
+If you would like to review our film and have us link it here, feel free to contact us.
+</p>
+
+<style>
+.review-grid{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:18px;
+  margin-top:40px;
+}
+
+.review-button{
+  display:block;
+  width:420px;              /* forces equal size */
+  max-width:90%;            /* keeps mobile safe */
+  padding:16px 24px;
+  border:1px solid var(--accent);
+  color:white;
+  text-decoration:none;
+  font-family:'Overlock', cursive;
+  font-size:16px;
+  letter-spacing:.5px;
+  text-align:center;
+  transition:all .18s ease;
+}
+
+.review-button:hover{
+  background:rgba(255,255,255,.06);
+  transform:translateY(-1px);
+}
+
+@media (max-width: 768px){
+
+  h1{
+    font-size:32px;
+    line-height:1.2;
+  }
+
+  .reviews-subheading{
+    font-size:18px;
+    padding:0 16px;
+  }
+
+  .reviews-container{
+    gap:18px;
+    padding:0 16px;
+  }
+
+  .review-button{
+    width:100%;
+    max-width:100%;
+    font-size:15px;
+    padding:14px 16px;
+    border-radius:4px;
+  }
+
+  .reviews-footer{
+    padding:0 20px;
+    font-size:15px;
+  }
+}
+</style>
+
+</BaseLayout>

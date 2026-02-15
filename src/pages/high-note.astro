@@ -302,26 +302,44 @@ if(closeBtn && panel){
 .hero-btn{
   display:flex;
   align-items:center;
-  gap:10px;
+  gap:12px;
   color:white;
   cursor:pointer;
   text-decoration:none;
+  line-height: 1;
 }
 
 .hero-text{
   border-bottom:1px solid white;
   padding-bottom:2px;
+  white-space: nowrap;
 }
 
 .icon-circle{
-  width:36px;
-  height:36px;
+  width:34px;
+  height:34px; 
   border:2px solid white;
   border-radius:50%;
   display:flex;
   align-items:center;
   justify-content:center;
   font-size:16px;
+  line-height:1;
+}
+
+@media (max-width:768px){
+
+  .hero-actions{
+    font-size:16px;
+    gap:24px;
+  }
+
+  .icon-circle{
+    width:28px;
+    height:28px;
+    font-size:11px;
+  }
+
 }
 
 /* SIDE CONTROLS */
@@ -333,7 +351,7 @@ if(closeBtn && panel){
   display:flex;
   flex-direction:column;
   align-items:flex-start;
-  gap:2px;
+  gap:4px;
   width:120px;
   font-family:Helvetica, Arial, sans-serif;
 }
@@ -344,7 +362,7 @@ if(closeBtn && panel){
   display:flex;
   align-items:center;
   gap:8px;
-  font-size:13px;
+  font-size:11px;
   color:white;
   opacity:.75;
   text-decoration:none;
@@ -352,7 +370,7 @@ if(closeBtn && panel){
   border:none;
   cursor:pointer;
   width:90px;
-  line-height:1.1;
+  line-height:1.4;
 }
 
 .side-icon{
@@ -362,8 +380,6 @@ if(closeBtn && panel){
   font-size:11px;
   line-height:1;
 }
-
-
 
 .side-btn:hover{ opacity:1; }
 
@@ -523,6 +539,32 @@ body::after{
   pointer-events:none;
   opacity:.07;
   background-image:url("https://grainy-gradients.vercel.app/noise.svg");
+}
+
+@media (max-width: 768px){
+
+  .video-wrapper{
+    margin-bottom:24px;
+  }
+
+  .film-title{
+    font-size:28px;
+    line-height:1.2;
+  }
+
+  .film-synopsis{
+    font-size:15px;
+    padding:0 16px;
+  }
+
+  .side-controls{
+    position:static;
+    display:flex;
+    justify-content:center;
+    gap:5px;
+    margin-top:18px;
+  }
+
 }
 
 </style>

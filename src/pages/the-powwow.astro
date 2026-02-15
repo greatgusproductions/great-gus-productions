@@ -28,7 +28,7 @@ const trailerId = "-e2YhWVKSGY";
           target="_blank" rel="noopener"
         >
           <span class="icon-circle">▶</span>
-          <span class="hero-text">Watch Full Movie</span>
+          <span class="hero-text">Watch Movie</span>
         </a>
       </div>
     </div>
@@ -41,7 +41,7 @@ const trailerId = "-e2YhWVKSGY";
         onclick="window.open(this.href,'_blank','noopener,width=1200,height=800'); return false;"
       >
         <span class="side-icon">▶</span>
-        <span class="side-label">Watch Full Movie</span>
+        <span class="side-label">Watch Movie</span>
       </a>
 
       <button class="side-btn info-btn">
@@ -320,6 +320,7 @@ if(closeBtn && panel){
 .hero-text{
   border-bottom:1px solid white;
   padding-bottom:2px;
+  white-space: nowrap;
 }
 
 .icon-circle{
@@ -331,6 +332,21 @@ if(closeBtn && panel){
   align-items:center;
   justify-content:center;
   font-size:16px;
+}
+
+@media (max-width:768px){
+
+  .hero-actions{
+    font-size:16px;
+    gap:24px;
+  }
+
+  .icon-circle{
+    width:28px;
+    height:28px;
+    font-size:14px;
+  }
+
 }
 
 /* SIDE CONTROLS */
@@ -361,7 +377,7 @@ if(closeBtn && panel){
   border:none;
   cursor:pointer;
   width:120px;
-  line-height:1.1;
+  line-height:1.4;
 }
 
 .side-icon{
@@ -532,6 +548,32 @@ body::after{
   pointer-events:none;
   opacity:.07;
   background-image:url("https://grainy-gradients.vercel.app/noise.svg");
+}
+
+@media (max-width: 768px){
+
+  .video-wrapper{
+    margin-bottom:24px;
+  }
+
+  .film-title{
+    font-size:28px;
+    line-height:1.2;
+  }
+
+  .film-synopsis{
+    font-size:15px;
+    padding:0 16px;
+  }
+
+  .side-controls{
+    position:static;
+    display:flex;
+    justify-content:center;
+    gap:5px;
+    margin-top:18px;
+  }
+
 }
 
 </style>
