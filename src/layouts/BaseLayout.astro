@@ -351,7 +351,15 @@ const currentYear = new Date().getFullYear();
     }
 
     </style>
-  
+  <meta name="description" content="Great Gus Productions is an independent film company creating original films, shorts, and creative storytelling from the Pacific Northwest." />
+
+<meta property="og:title" content={title} />
+<meta property="og:description" content="Independent films and creative storytelling from Great Gus Productions." />
+<meta property="og:image" content="/images/ggp-film-logo.jpg" />
+<meta property="og:type" content="website" />
+
+<meta name="twitter:card" content="summary_large_image" />
+
 </head>
 
 <script>
@@ -503,7 +511,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!id) return;
 
         const iframe = document.createElement("iframe");
-        iframe.src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0&modestbranding=1`;
+        iframe.src = `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1`;
         iframe.allow =
           "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
         iframe.allowFullscreen = true;

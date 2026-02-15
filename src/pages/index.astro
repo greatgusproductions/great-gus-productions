@@ -39,6 +39,13 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       margin-top: 3.5rem;
       width: 100%;
     }
+	@media (max-width: 768px) {
+  .video-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+}
+
 
     .video-item {
       width: 100%;
