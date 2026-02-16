@@ -2,9 +2,125 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="Scripts">
-  <main class="page">
-    <h1>Scripts</h1>
-    <p>Downloadable scripts from Great Gus Productions.</p>
-  </main>
+<BaseLayout title="Scripts | Great Gus Productions">
+
+<section class="scripts-page fade-in">
+
+  <h1 class="scripts-title">Scripts</h1>
+
+  <div class="scripts-grid">
+
+    <a href="/viewer/lonely-ponderosa" target="_blank" class="script-card">
+      <h3>The Lonely Ponderosa</h3>
+      <img 
+        src="/images/scripts/lonely-ponderosa.jpg"
+        alt="The Lonely Ponderosa Script Cover"
+        loading="lazy"
+      />
+    </a>
+
+    <a href="/viewer/luke-444" target="_blank" class="script-card">
+      <h3>Luke 444</h3>
+      <img 
+        src="/images/scripts/luke-444.jpg"
+        alt="Luke 444 Script Cover"
+        loading="lazy"
+      />
+    </a>
+
+  </div>
+
+</section>
+
+<style>
+
+:root{
+  --accent:#f3d806;
+}
+
+/* Fade-in animation (matches film pages) */
+
+.fade-in{
+  opacity:0;
+  transform:translateY(20px);
+  animation:fadeUp .9s ease forwards;
+}
+
+@keyframes fadeUp{
+  to{ opacity:1; transform:translateY(0); }
+}
+
+/* Page layout */
+
+.scripts-page{
+  max-width:1000px;
+  margin:40px auto 120px auto;
+  text-align:center;
+}
+
+/* Title */
+
+.scripts-title{
+  color:var(--accent);
+  font-family:'Overlock', cursive;
+  font-weight:100;
+  font-size:40px;
+  margin-bottom:40px;
+}
+
+/* Grid */
+
+.scripts-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:70px 60px;
+  justify-items:center;
+}
+
+/* Cards */
+
+.script-card{
+  text-decoration:none;
+  color:white;
+  font-family:Helvetica, Arial, sans-serif;
+  font-weight:300;
+}
+
+.script-card h3{
+  margin-bottom:14px;
+  font-size:20px;
+  font-weight:300;
+  letter-spacing:.3px;
+}
+
+/* Cover styling */
+
+.script-card img{
+  width:200px;
+  border-radius:10px;
+  display:block;
+  box-shadow:0 6px 18px rgba(0,0,0,.35);
+  transition:transform .25s ease, filter .25s ease;
+}
+
+.script-card:hover img{
+  transform:scale(1.04);
+  filter:brightness(.9);
+}
+
+/* Mobile */
+
+@media (max-width:768px){
+  .scripts-grid{
+    grid-template-columns:1fr;
+    gap:50px;
+  }
+
+  .scripts-title{
+    font-size:32px;
+  }
+}
+
+</style>
+
 </BaseLayout>
