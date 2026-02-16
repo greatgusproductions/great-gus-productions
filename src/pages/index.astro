@@ -8,7 +8,14 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       <img
         src="/images/ggp-film-logo.jpg"
         alt="Great Gus Productions Film Logo"
+		class="logo-desktop"
       />
+
+	  <img
+    src="/images/ggp-film-logo-mobile.jpg"
+    alt="Great Gus Productions Film Logo"
+    class="logo-mobile"
+  />
     </div>
   </section>
 
@@ -67,8 +74,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       display: block;
     }
 
-    
-
     .video-thumb:hover img {
       filter: brightness(0.70);
     }
@@ -88,32 +93,41 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 }
 
 
-    .hero-logo img {
-      width: 100%;
-      max-width: 700px;
-      height: auto;
-      display: block;
-      margin: 0 auto;
-    }
-	.hero-logo {
-	  min-height: 420px; /* reserves space so grid can't jump upward */
-	  display: flex;
-	  align-items: center; 
-	  justify-content: center;
-	}
-	
-	@media (max-width: 768px) {
-  .hero-logo {
-    min-height: 240px;   /* tighter spacing */
-    padding: 0px 0;
-  }
-
   .hero-logo img {
-    max-width: 85%;
-	
-  }
+  width: 100%;
+  max-width: 700px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
 }
 
+.hero-logo {
+  min-height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hide mobile logo on desktop */
+.logo-mobile {
+  display: none !important;
+}
+
+/* Mobile rules */
+@media (max-width:768px){
+
+  .logo-desktop {
+    display: none !important;
+  }
+
+  .logo-mobile {
+    display: block !important;
+  }
+
+  .hero-logo {
+    min-height:240px;
+  }
+}
 
   </style>
 </BaseLayout>
