@@ -13,31 +13,71 @@ const files = {
   "luke-444": "/scripts/luke-444.pdf"
 };
 
+const titles = {
+  "lonely-ponderosa": "The Lonely Ponderosa",
+  "luke-444": "Luke 444"
+};
+
 const pdf = files[slug as keyof typeof files];
+const title = titles[slug as keyof typeof files];
 ---
 
 <html>
 <head>
-  <title>Script Viewer</title>
+  <title>{title} | Great Gus Productions</title>
+
   <style>
     body {
-      margin: 0;
-      background: black;
+      margin:0;
+      background:black;
+      font-family:Helvetica, Arial, sans-serif;
+      color:white;
     }
 
-    iframe {
-      width: 100%;
-      height: 100vh;
-      border: none;
+    .viewer-header{
+      padding:14px 20px;
+      border-bottom:1px solid #222;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .viewer-title{
+      color:#f3d806;
+      font-size:18px;
+      font-weight:300;
+    }
+
+    .back-link{
+      color:white;
+      text-decoration:none;
+      opacity:.7;
+    }
+
+    .back-link:hover{
+      opacity:1;
+    }
+
+    iframe{
+      width:100%;
+      height:calc(100vh - 52px);
+      border:none;
     }
   </style>
 </head>
 
-<body>
+<body oncontextmenu="return false;">
+
+  <div class="viewer-header">
+    <div class="viewer-title">{title}</div>
+    <a href="/about/scripts" class="back-link">Back</a>
+  </div>
+
   {pdf ? (
-    <iframe src={pdf}></iframe>
+    <iframe src={`https://docs.google.com/gview?embedded=true&url=https://greatgusproductions.com${pdf}`}></iframe>
   ) : (
-    <p style="color:white; padding:40px;">Script not found.</p>
+    <p style="padding:40px;">Script not found.</p>
   )}
+
 </body>
 </html>
