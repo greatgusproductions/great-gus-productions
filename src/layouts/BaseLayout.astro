@@ -295,6 +295,7 @@ const currentYear = new Date().getFullYear();
       .footer-social {
             position: static;
             justify-content: center;
+            margin-top: 14px;
             margin-bottom: 14px;
         }
       }
@@ -349,6 +350,69 @@ const currentYear = new Date().getFullYear();
       }
 
     }
+    .hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+@media (max-width:768px){
+
+  .nav-inner{
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .hamburger{
+    display: block;
+  }
+
+  .main-nav{
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: black;
+    border-top: 1px solid #222;
+    flex-direction: column;
+    padding: 18px 0;
+    gap: 16px;
+  }
+
+  .main-nav.open{
+    display: flex;
+  }
+
+  .site-name{
+    font-size: 26px;
+    text-align: right;
+  }
+}
+@media (max-width:768px){
+
+  .mobile-break{
+    display:none;
+  }
+
+  .site-name{
+    white-space:nowrap;
+    font-size:29px;
+    text-align:center;
+    margin:0 auto;
+  }
+
+  .nav-inner{
+    justify-content:center;
+  }
+
+}
+
+
 
     </style>
   <meta name="description" content="Great Gus Productions is an independent film company creating original films, shorts, and creative storytelling from the Pacific Northwest." />
@@ -394,6 +458,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+const hamburger = document.querySelector(".hamburger");
+const nav = document.querySelector(".main-nav");
+
+hamburger?.addEventListener("click", () => {
+  nav?.classList.toggle("open");
+});
+
 </script>
 
 
@@ -401,10 +473,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   <body>
     <header class="site-header">
-      <div class="nav-inner">
+      
+        <div class="nav-inner">
+
+  <button class="hamburger" aria-label="Menu">
+    ☰
+  </button>
+
         <a href="/" class="site-name">
-          Great Gus<br />Productions
-        </a>
+  Great Gus<span class="mobile-break"><br /></span> Productions
+</a>
+
 
         <nav class="main-nav">
           <a href="/" class={Astro.url.pathname === "/" ? "active" : ""}>Home</a>
