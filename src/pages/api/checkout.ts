@@ -42,8 +42,8 @@ export async function POST({ request }: { request: Request }) {
         },
       },
     ],
-    success_url: "http://localhost:4323/thank-you",
-    cancel_url: "http://localhost:4323/cart",
+    success_url: "http://greatgusproductions.com/thank-you",
+    cancel_url: "http://greatgusproductions.com/cart",
   });
 
   return new Response(JSON.stringify({ url: session.url }), {
