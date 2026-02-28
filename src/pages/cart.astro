@@ -1,0 +1,250 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Cart | Great Gus Productions">
+
+<h1 class="cart-title">My Cart</h1>
+
+<div id="cartContainer"></div>
+
+<div id="cartSummary" style="display:none;">
+  <div class="cart-summary">
+    <p>Subtotal: <span id="subtotal">$0.00</span></p>
+  </div>
+</div>
+
+<button id="checkoutBtn" class="checkout-btn">
+  <span id="checkoutText">Proceed to Checkout</span>
+  <span id="checkoutSpinner" class="spinner"></span>
+</button>
+
+<script is:inline>
+const productImages = {
+  "Great Gus Beanie": "/images/shop/beanie.jpg",
+  "Great Gus Tee": "/images/shop/tee.jpg",
+  "Great Gus Hoodie": "/images/shop/hoodie.jpg",
+  "Great Gus Hat": "/images/shop/hat.jpg"
+};
+
+let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+const container = document.getElementById("cartContainer");
+const summaryContainer = document.getElementById("cartSummary");
+
+function getProductImage(name){
+  // extract base product name (before variant in parentheses)
+  const baseName = name.split('(')[0].trim();
+  for(const [key, img] of Object.entries(productImages)){
+    if(name.includes(key)) return img;
+  }
+  return "/images/shop/placeholder.jpg";
+}
+
+function calculateTotal(){
+  return cart.reduce((sum, item)=> sum + (item.price * item.qty), 0).toFixed(2);
+}
+
+function render(){
+  if(cart.length === 0){
+    container.innerHTML = "<p>Your cart is empty.</p>";
+    summaryContainer.style.display = "none";
+    return;
+  }
+
+  summaryContainer.style.display = "block";
+  document.getElementById("subtotal").textContent = `$${calculateTotal()}`;
+
+  container.innerHTML = cart.map((item, idx)=>{
+    // Extract variant (color/size) from name if it exists
+    const variantMatch = item.name.match(/\(([^)]+)\)/);
+    const variant = variantMatch ? variantMatch[1] : "";
+    
+    return `
+    <div class="cart-item">
+      <!-- thumbnail size is controlled here; change width/height to adjust -->
+<img src="${getProductImage(item.name)}" alt="${item.name}" class="item-image" style="width:100px;height:100px;flex-shrink:0;object-fit:cover;">
+      <div class="item-details">
+        <h3>${item.name}</h3>
+        <p class="item-price">$${item.price.toFixed(2)}</p>
+        ${variant ? `<p class="item-variant">${variant}</p>` : ""}
+      </div>
+      <div class="item-controls">
+        <label>Qty:</label>
+        <input type="number" min="1" value="${item.qty}" class="qty-input" style="width:2rem;" onchange="updateQty('${item.key}', this.value)">
+        <p class="item-total">$${(item.price * item.qty).toFixed(2)}</p>
+        <button onclick="removeItem('${item.key}')" class="remove-btn" title="Remove">🗑️</button>
+      </div>
+    </div>
+  `;
+  }).join("");
+}
+
+function updateQty(key, newQty){
+  const qty = parseInt(newQty, 10);
+  if(isNaN(qty) || qty < 1) return;
+  const item = cart.find(i=> i.key === key);
+  if(item) item.qty = qty;
+  localStorage.setItem("cart", JSON.stringify(cart));
+  render();
+}
+
+function removeItem(key){
+  cart = cart.filter(item=> item.key !== key);
+  localStorage.setItem("cart", JSON.stringify(cart));
+  render();
+}
+
+async function checkout(){
+  if(cart.length === 0){
+    alert("Your cart is empty.");
+    return;
+  }
+
+  const btn = document.getElementById("checkoutBtn");
+  const text = document.getElementById("checkoutText");
+  const spinner = document.getElementById("checkoutSpinner");
+
+  btn.disabled = true;
+  text.textContent = "Redirecting...";
+  spinner.style.display = "inline-block";
+
+  const items = cart.map(item=>({
+    price:item.priceId,
+    quantity:item.qty
+  }));
+
+  const res = await fetch("/api/checkout",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({items})
+  });
+
+  const data = await res.json();
+  window.location = data.url;
+}
+
+document.getElementById("checkoutBtn").addEventListener("click", checkout);
+render();
+</script>
+
+<style is:global>
+.cart-title{
+  text-align:center;
+  margin:3rem 0;
+  font-size:28px;
+}
+
+#cartContainer {
+  max-width:900px;
+  margin:2rem auto;
+}
+
+.cart-item{
+  display:flex;
+  flex-wrap:nowrap; /* keep details to the right of image */
+  width:100%;
+  gap:20px;
+  padding:20px 0;
+  border-bottom:1px solid #333;
+  align-items:flex-start;
+}
+
+.item-image{
+  /* default thumbnail size, tweak here as well */
+  width:100px;
+  height:100px;
+  object-fit:cover;
+  border:1px solid #222;
+}
+
+.item-details{
+  flex:1;
+}
+
+.item-details h3,
+.item-details .item-price,
+.item-details .item-variant {
+  font-size: 14px;
+  color: #fff;
+  font-weight: normal;
+  margin: 0 0 4px 0;
+  display: block;
+}
+.item-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.item-controls{
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  gap:8px;
+}
+
+.qty-input{
+  width:1.2rem;
+  padding:4px;
+  border:1px solid #444;
+  background:#1a1a1a;
+  color:white;
+}
+
+.item-total{
+  font-weight:bold;
+  font-size:16px;
+  margin:0;
+}
+
+.remove-btn{
+  background:none;
+  border:none;
+  color:red;
+  padding:6px 12px;
+  cursor:pointer;
+  font-size:20px;
+}
+
+.cart-summary{
+  max-width:900px;
+  margin:20px auto;
+  padding:15px 20px;
+  border:1px solid #333;
+  text-align:right;
+  font-size:16px;
+  font-weight:bold;
+}
+
+.checkout-btn{
+  margin:40px auto;
+  display:block;
+  background:var(--accent);
+  border:none;
+  padding:14px 28px;
+  font-weight:bold;
+  cursor:pointer;
+  font-size:16px;
+}
+
+.checkout-btn:hover{
+  opacity:0.9;
+}
+
+.spinner {
+  display: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #000;
+  border-top: 2px solid #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin-left: 8px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+</style>
+
+</BaseLayout>

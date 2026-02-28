@@ -2,9 +2,84 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="Shop">
-  <main class="page">
-    <h1>Shop</h1>
-    <p>Merch powered by Printful + Stripe will live here.</p>
-  </main>
+<BaseLayout title="Shop | Great Gus Productions">
+
+<h1 class="shop-title">Shop</h1>
+
+<div class="shop-grid">
+
+  <a href="/products/beanie" class="product-card">
+    <img src="/images/shop/beanie.jpg" alt="Great Gus Beanie">
+    <h2>Great Gus <span class="item-type">Beanie</span></h2>
+    <p>$29</p>
+  </a>
+  
+  <a href="/products/tee" class="product-card">
+    <img src="/images/shop/tee.jpg" alt="Great Gus Tee">
+    <h2>Great Gus <span class="item-type">Tee</span></h2>
+    <p>$35</p>
+  </a>
+
+  <a href="/products/hoodie" class="product-card">
+    <img src="/images/shop/hoodie.jpg" alt="Great Gus Hoodie">
+    <h2>Great Gus <span class="item-type">Hoodie</span></h2>
+    <p>$65</p>
+  </a>
+
+  <a href="/products/hat" class="product-card">
+    <img src="/images/shop/hat.jpg" alt="Great Gus Hat">
+    <h2>Great Gus <span class="item-type">Hat</span></h2>
+    <p>$29</p>
+  </a>
+
+</div>
+
+<style>
+.shop-title{
+  text-align:center;
+  margin-top:3rem;
+  font-size:32px;
+}
+
+.shop-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+  gap:40px;
+  margin:3rem auto 5rem;
+  max-width:1000px;
+}
+
+.product-card{
+  text-decoration:none;
+  color:white;
+  border:1px solid #222;
+  padding:20px;
+  text-align:center;
+  transition:all 0.25s ease;
+}
+
+.product-card:hover{
+  border-color:var(--accent);
+  transform:translateY(-5px);
+}
+
+.product-card img{
+  width:100%;
+  aspect-ratio:1/1;
+  object-fit:cover;
+  margin-bottom:15px;
+}
+
+/* split product name on desktop, stack type beneath "Great Gus" */
+.product-card h2 .item-type {
+  display: block;
+}
+/* keep names on single line on mobile */
+@media (max-width:768px) {
+  .product-card h2 .item-type {
+    display: inline;
+  }
+}
+</style>
+
 </BaseLayout>

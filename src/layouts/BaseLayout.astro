@@ -411,6 +411,71 @@ const currentYear = new Date().getFullYear();
   }
 
 }
+.main-nav #cartLink{
+  margin-left: 20px;
+  font-size: 20px;
+}
+
+.cart-link {
+  position: relative;
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.cart-link svg {
+  width: 22px;
+  height: 22px;
+  /* grey like other nav links */
+  fill: var(--fg);
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.cart-link:hover svg {
+  /* white on hover */
+  opacity: 1;
+}
+
+.cartCount {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  background: var(--accent);
+  color: black;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 50%;
+  display: none;
+}
+
+/* hide the desktop nav cart, show mobile icon on small screens */
+.mobile-cart {
+  display: none;
+}
+
+@media (max-width:768px) {
+  .mobile-cart {
+    display: flex;
+  }
+  .main-nav #cartLink {
+    display: none;
+  }
+
+  /* bring hamburger and cart closer to centered site name, while padding edges */
+  .nav-inner {
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0 0.75rem; /* breathing room from viewport edges */
+  }
+  .hamburger {
+    margin-right: 0.25rem;
+  }
+  .mobile-cart {
+    margin-left: 0.25rem;
+  }
+}
 
 
 
@@ -484,6 +549,13 @@ hamburger?.addEventListener("click", () => {
   Great Gus<span class="mobile-break"><br /></span> Productions
 </a>
 
+        <!-- primary cart icon for mobile, placed beside site name -->
+        <a href="/cart" id="mobileCartLink" class="cart-link mobile-cart">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M7 4h-2l-1 2h2l3.6 7.59-1.35 2.44A1 1 0 009 18h9v-2H9.42a.25.25 0 01-.22-.37L10 14h6a1 1 0 00.92-.62l3-7A1 1 0 0019 5H6.21l-.94-2zM7 20a2 2 0 102 2 2 2 0 00-2-2zm10 0a2 2 0 102 2 2 2 0 00-2-2z"/>
+  </svg>
+  <span class="cartCount">0</span>
+</a>
 
         <nav class="main-nav">
           <a href="/" class={Astro.url.pathname === "/" ? "active" : ""}>Home</a>
@@ -511,6 +583,14 @@ hamburger?.addEventListener("click", () => {
               <a href="/about/scripts">Scripts</a>
             </div>
           </div>
+          <a href="/cart" id="cartLink" class="cart-link">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M7 4h-2l-1 2h2l3.6 7.59-1.35 2.44A1 1 0 009 18h9v-2H9.42a.25.25 0 01-.22-.37L10 14h6a1 1 0 00.92-.62l3-7A1 1 0 0019 5H6.21l-.94-2zM7 20a2 2 0 102 2 2 2 0 00-2-2zm10 0a2 2 0 102 2 2 2 0 00-2-2z"/>
+  </svg>
+  <span class="cartCount">0</span>
+</a>
+
+
         </nav>
       </div>
     </header>
@@ -601,5 +681,23 @@ hamburger?.addEventListener("click", () => {
         btn.replaceWith(iframe);
       });
     </script>
+    <script is:inline>
+function updateCartCount(){
+  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+  const count = cart.reduce((total,item)=> total + item.qty, 0);
+
+  document.querySelectorAll(".cartCount").forEach((badge)=>{
+    if(count > 0){
+      badge.style.display = "inline-block";
+      badge.textContent = count;
+    } else {
+      badge.style.display = "none";
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", updateCartCount);
+</script>
+
   </body>
 </html>

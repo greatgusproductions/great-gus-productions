@@ -1,0 +1,243 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Great Gus Tee">
+
+<div class="product-wrapper">
+
+  <div class="product-image">
+    <!-- main display image -->
+    <img id="mainImage" src="/images/shop/tee.jpg" alt="Great Gus Tee">
+    <!-- thumbnails to cycle images -->
+    <div class="thumbnails">
+      <img src="/images/shop/tee.jpg" data-src="/images/shop/tee.jpg" alt="Tee 1" class="active-thumb">
+      <img src="/images/shop/tee-2.jpg" data-src="/images/shop/tee-2.jpg" alt="Tee 2">
+      <img src="/images/shop/tee-3.jpg" data-src="/images/shop/tee-3.jpg" alt="Tee 3">
+    </div>
+  </div>
+
+  <div class="product-info">
+    <h1>Great Gus Tee</h1>
+    <p class="price">$35</p>
+
+    <ul>
+      <li>100% organic combed cotton.</li>
+      <li>Regular fit with ribbed collar.</li>
+      <li>Lightweight and breathable.</li>
+      <li>Durable double-stitched hem.</li>
+    </ul>
+
+    <label for="sizeSelect">Size:</label>
+    <select id="sizeSelect" style="text-align-last:center;">
+      <option>S</option>
+      <option>M</option>
+      <option>L</option>
+      <option>XL</option>
+      <option>2XL</option>
+      <option>3XL</option>
+      <option>4XL</option>
+      <option>5XL</option>
+    </select>
+
+    <label for="qtyInput">Quantity:</label>
+    <input type="number" id="qtyInput" min="1" value="1" style="width:1.5rem;">
+
+    <button id="addBtn" class="add-btn" onclick="addToCart()">Add to Cart</button>
+    <p id="addedMessage" class="added-message"></p>
+  </div>
+
+</div>
+
+<script is:inline>
+const priceMap = {
+  "S": "price_1T4DviJOsalhtcQIiGq6eVsw",
+  "M": "price_1T4DwJJOsalhtcQIt40hRVEx",
+  "L": "price_1T4DwrJOsalhtcQIJOIan0UP",
+  "XL": "price_1T4DxTJOsalhtcQIc6NMYu6s",
+  "2XL": "price_1T4Dy1JOsalhtcQIzotRHcIY",
+  "3XL": "price_1T4DybJOsalhtcQIsXvNja5l",
+  "4XL": "price_1T4DzZJOsalhtcQIceFv7kvI",
+  "5XL": "price_1T1dKwJOsalhtcQI8Wcv2SEr"
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  const thumbs = document.querySelectorAll('.thumbnails img');
+  const mainImg = document.getElementById('mainImage');
+
+  thumbs.forEach(img=>{
+    img.addEventListener('click', ()=>{
+      mainImg.src = img.dataset.src;
+      thumbs.forEach(i=>i.classList.remove('active-thumb'));
+      img.classList.add('active-thumb');
+    });
+  });
+});
+
+function addToCart(){
+  const btn = document.getElementById("addBtn");
+  btn.disabled = true;
+  btn.textContent = "Adding...";
+
+  let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+  const size = document.getElementById("sizeSelect").value;
+  const priceId = priceMap[size];
+
+  let qty = parseInt(document.getElementById("qtyInput").value, 10);
+  if(isNaN(qty) || qty < 1) qty = 1;
+
+  const key = priceId;
+
+  const existing = cart.find(i => i.key === key);
+
+  if(existing){
+    existing.qty += qty;
+  } else {
+    cart.push({
+      key,
+      priceId,
+      name:`Great Gus Tee (${size})`,
+      price:35,
+      qty
+    });
+  }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+  updateCartCount();
+
+  const msg = document.getElementById("addedMessage");
+if(msg){
+  msg.textContent = "✓ Added to cart";
+  msg.classList.add("show");
+
+  setTimeout(() => {
+    msg.classList.remove("show");
+    msg.textContent = "";
+  }, 1500);
+}
+
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.textContent = "Add to Cart";
+  }, 500)
+}
+
+function updateCartCount(){
+  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+  const total = cart.reduce((sum, item)=> sum + item.qty, 0);
+  const counter = document.getElementById("cart-count");
+  if(counter){
+    counter.textContent = total > 0 ? total : "";
+  }
+}
+</script>
+
+<style>
+.product-wrapper{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:60px;
+  margin:4rem auto;
+  max-width:1000px;
+}
+
+.product-image img{
+  width:100%;
+  border:1px solid #222;
+}
+
+.product-image {
+  margin-left:28px;
+}
+
+.product-info {
+  margin-left:35px;
+}
+
+.price{
+  font-size:24px;
+  margin:10px 0 20px;
+  color:var(--accent);
+}
+
+ul{
+  margin-bottom:25px;
+  line-height:1.7;
+}
+
+label {
+  display:inline-block;
+  margin-top:8px;
+  margin-right:8px;
+  margin-bottom:4px;
+}
+
+select, input[type="number"] {
+  display:inline-block;
+  margin-right:20px;
+  margin-bottom:12px;
+}
+
+.add-btn{
+  display:block;
+  margin-top:16px;
+  background:var(--accent);
+  border:none;
+  padding:12px 22px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:opacity 0.2s ease;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance:menulist-button;
+  opacity:1;
+}
+
+/* thumbnails under main image */
+.thumbnails {
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+  justify-content:center;
+}
+.thumbnails img {
+  width:60px;
+  height:60px;
+  object-fit:cover;
+  cursor:pointer;
+  border:2px solid transparent;
+}
+.thumbnails img.active-thumb {
+  border-color:var(--accent);
+}
+
+.add-btn:hover{
+  opacity:0.85;
+}
+
+.added-message {
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.added-message.show {
+  opacity: 1;
+}
+
+@media(max-width:768px){
+  .product-wrapper{
+    grid-template-columns:1fr;
+    gap:20px;
+  }
+  .product-image {
+    margin-left:0;
+  }
+}
+</style>
+
+</BaseLayout>

@@ -1,0 +1,235 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Great Gus Beanie">
+
+<div class="product-wrapper">
+
+  <div class="product-image">
+    <!-- main display image -->
+    <img id="mainImage" src="/images/shop/beanie.jpg" alt="Great Gus Beanie">
+    <!-- thumbnails to cycle images -->
+    <div class="thumbnails">
+      <img src="/images/shop/beanie.jpg" data-src="/images/shop/beanie.jpg" alt="Beanie 1" class="active-thumb">
+      <img src="/images/shop/beanie-2.jpg" data-src="/images/shop/beanie-2.jpg" alt="Beanie 2">
+      <img src="/images/shop/beanie-3.jpg" data-src="/images/shop/beanie-3.jpg" alt="Beanie 3">
+    </div>
+  </div>
+
+  <div class="product-info">
+    <h1>Great Gus Beanie</h1>
+    <p class="price">$29</p>
+
+    <ul>
+      <li>100% organic cotton ribbed beanie.</li>
+      <li>Soft, breathable, and lightweight.</li>
+      <li>Cuffed fit with tear-away tag.</li>
+      <li>Ethically sourced.</li>
+    </ul>
+
+    <label for="colorSelect">Color:</label>
+    <select id="colorSelect">
+      <option>Yellow</option>
+      <option>Grey</option>
+      <option>Black</option>
+    </select>
+
+    <label for="qtyInput">Quantity:</label>
+    <input type="number" id="qtyInput" min="1" value="1" style="width:1.5rem;">
+
+    <button id="addBtn" class="add-btn" onclick="addToCart()">Add to Cart</button>
+    <p id="addedMessage" class="added-message"></p>
+  </div>
+
+</div>
+
+<script is:inline>
+const priceMap = {
+  "Black": "price_1T4DtvJOsalhtcQIPtkF11mt",
+  "Grey": "price_1T4DsnJOsalhtcQInFnUPIWj",
+  "Yellow": "price_1T1gpVJOsalhtcQIKAcos7Va"
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  const thumbs = document.querySelectorAll('.thumbnails img');
+  const mainImg = document.getElementById('mainImage');
+
+  thumbs.forEach(img=>{
+    img.addEventListener('click', ()=>{
+      mainImg.src = img.dataset.src;
+      thumbs.forEach(i=>i.classList.remove('active-thumb'));
+      img.classList.add('active-thumb');
+    });
+  });
+});
+
+function addToCart(){
+  const btn = document.getElementById("addBtn");
+  btn.disabled = true;
+  btn.textContent = "Adding...";
+
+  let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+  const color = document.getElementById("colorSelect").value;
+  const priceId = priceMap[color];
+
+  if(!priceId){
+    alert("Variant not found.");
+    return;
+  }
+
+  let qty = parseInt(document.getElementById("qtyInput").value, 10);
+  if(isNaN(qty) || qty < 1) qty = 1;
+
+  const key = priceId;
+
+  const existing = cart.find(i => i.key === key);
+
+  if(existing){
+    existing.qty += qty;
+  } else {
+    cart.push({
+      key,
+      priceId,
+      name:`Great Gus Beanie (${color})`,
+      price:29,
+      qty
+    });
+  }
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+  updateCartCount();
+  
+  const msg = document.getElementById("addedMessage");
+if(msg){
+  msg.textContent = "✓ Added to cart";
+  msg.classList.add("show");
+
+  setTimeout(() => {
+    msg.classList.remove("show");
+    msg.textContent = "";
+  }, 1400);
+}
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.textContent = "Add to Cart";
+  }, 500)
+}
+
+function updateCartCount(){
+  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+  const total = cart.reduce((sum, item)=> sum + item.qty, 0);
+  const counter = document.getElementById("cart-count");
+  if(counter){
+    counter.textContent = total > 0 ? total : "";
+  }
+}
+</script>
+
+<style>
+.product-wrapper{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:60px;
+  margin:4rem auto;
+  max-width:1000px;
+}
+
+.product-image img{
+  width:100%;
+  border:1px solid #222;
+}
+
+.product-image {
+  margin-left:28px;
+}
+
+.product-info {
+  margin-left:35px;
+}
+
+.price{
+  font-size:24px;
+  margin:10px 0 20px;
+  color:var(--accent);
+}
+
+ul{
+  margin-bottom:25px;
+  line-height:1.7;
+}
+
+label {
+  display:inline-block;
+  margin-top:8px;
+  margin-right:8px;
+  margin-bottom:4px;
+}
+
+select, input[type="number"] {
+  display:inline-block;
+  margin-right:20px;
+  margin-bottom:12px;
+}
+
+.add-btn{
+  display:block;
+  margin-top:14px;
+  background:var(--accent);
+  border:none;
+  padding:12px 22px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:opacity 0.2s ease;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance:menulist-button;
+  opacity:1;
+}
+
+/* thumbnails under main image */
+.thumbnails {
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+  justify-content:center;
+}
+.thumbnails img {
+  width:60px;
+  height:60px;
+  object-fit:cover;
+  cursor:pointer;
+  border:2px solid transparent;
+}
+.thumbnails img.active-thumb {
+  border-color:var(--accent);
+}
+
+.add-btn:hover{
+  opacity:0.85;
+}
+.added-message {
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.added-message.show {
+  opacity: 1;
+}
+@media(max-width:768px){
+  .product-wrapper{
+    grid-template-columns:1fr;
+    gap:20px;
+  }
+  .product-image {
+    margin-left:0;
+  }
+}
+</style>
+
+</BaseLayout>
