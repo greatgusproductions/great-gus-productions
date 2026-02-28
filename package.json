@@ -12,5 +12,8 @@
     "@astrojs/sitemap": "^3.7.0",
     "astro": "^5.17.1",
     "stripe": "^20.3.1"
+  },
+  "devDependencies": {
+    "@astrojs/netlify": "^6.6.4"
   }
 }

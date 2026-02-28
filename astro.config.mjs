@@ -1,7 +1,7 @@
-import { defineConfig } from 'astro/config';
-import sitemap from '@astrojs/sitemap';
+import { defineConfig } from "astro/config";
+import netlify from "@astrojs/netlify";
 
 export default defineConfig({
-  site: 'https://greatgusproductions.com',
-  integrations: [sitemap()]
+  output: "server",
+  adapter: netlify(),
 });
