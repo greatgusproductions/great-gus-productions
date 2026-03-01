@@ -108,18 +108,37 @@ async function checkout(){
   text.textContent = "Redirecting...";
   spinner.style.display = "inline-block";
 
-  const items = cart.map(item=>({
-    price:item.priceId,
-    quantity:item.qty
+  const items = cart.map(item => ({
+    price: item.priceId,
+    quantity: item.qty
   }));
 
-  const res = await fetch("/api/checkout",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({items})
+  const res = await fetch("/api/checkout", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ items }),
   });
 
+  if (!res.ok) {
+    const textEl = document.getElementById("checkoutText");
+    const spinner = document.getElementById("checkoutSpinner");
+    const text = await res.text();
+    console.error("Checkout API failed:", res.status, text);
+    alert("Checkout failed. Open DevTools Console to see the error.");
+    btn.disabled = false;
+    textEl.textContent = "Checkout";
+    spinner.style.display = "none";
+    return;
+  }
+
   const data = await res.json();
+
+  if (!data?.url) {
+    console.error("No url returned:", data);
+    alert("Checkout failed (missing Stripe URL). Check console.");
+    return;
+  }
+
   window.location = data.url;
 }
 
