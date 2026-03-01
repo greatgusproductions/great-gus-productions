@@ -73,6 +73,15 @@ const confirm = import.meta.env.PRINTFUL_CONFIRM === "true";
       expand: ["data.price.product"]
     });
 
+
+    console.log("Line items debug:", lineItems.data.map(li => ({
+      desc: li.description,
+      qty: li.quantity,
+      priceId: li.price?.id,
+      priceMeta: li.price?.metadata,
+      productMeta: (li.price?.product as any)?.metadata,
+    })));
+
     const shipping = (session as any).shipping_details ?? session.customer_details;
 
     if (
