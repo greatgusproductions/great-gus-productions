@@ -132,7 +132,7 @@ const confirm = import.meta.env.PRINTFUL_CONFIRM === "true";
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        external_id: session.id, // helps prevent duplicates
+        external_id: `stripe_${session.id}`.slice(0, 32),
         confirm,                 // draft in dev, auto-confirm in prod
         recipient: {
           name: shipping?.name,
