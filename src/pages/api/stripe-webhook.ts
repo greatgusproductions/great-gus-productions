@@ -239,6 +239,8 @@ export async function POST({ request }: { request: Request }) {
         ...sessionContext,
         itemCount: printfulItems.length,
         variantIds: printfulItems.map((item) => item.sync_variant_id),
+        recipientCountry: recipient.countryCode,
+        recipientState: recipient.stateCode,
       });
 
       const response = await fetch("https://api.printful.com/orders", {
@@ -272,6 +274,12 @@ export async function POST({ request }: { request: Request }) {
           typeof result?.error?.message === "string"
             ? result.error.message.toLowerCase()
             : "";
+        const safePrintfulMessage =
+          typeof result === "object" &&
+          result &&
+          typeof (result as { error?: { message?: unknown } }).error?.message === "string"
+            ? (result as { error?: { message?: string } }).error?.message
+            : "Printful request failed";
         const duplicateExternalId =
           response.status === 400 &&
           printfulErrorMessage.includes("external_id") &&
@@ -291,16 +299,11 @@ export async function POST({ request }: { request: Request }) {
           ...sessionContext,
           status: response.status,
           printfulOrderId: getPrintfulOrderId(result),
-          errorMessage:
-            typeof result === "object" &&
-            result &&
-            typeof (result as { error?: { message?: unknown } }).error?.message === "string"
-              ? (result as { error?: { message?: string } }).error?.message
-              : "Printful request failed",
+          errorMessage: safePrintfulMessage,
         });
 
         // Return 200 so Stripe doesn't keep retrying the webhook
-        return new Response("Printful failed", { status: 200 });
+        return new Response(`Printful failed: ${safePrintfulMessage}`, { status: 200 });
       }
 
       console.log("Printful order created", {
