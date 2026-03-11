@@ -36,6 +36,65 @@ function getSessionContext(session: Stripe.Checkout.Session) {
   };
 }
 
+type ShippingAddressLike = {
+  line1?: string | null;
+  line2?: string | null;
+  city?: string | null;
+  state?: string | null;
+  postal_code?: string | null;
+  country?: string | null;
+  administrative_area?: string | null;
+};
+
+type ShippingDetailsLike = {
+  name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  address?: ShippingAddressLike | null;
+};
+
+function getFulfillmentRecipient(session: Stripe.Checkout.Session) {
+  const shippingDetails = (session as Stripe.Checkout.Session & {
+    shipping_details?: ShippingDetailsLike | null;
+    collected_information?: { shipping_details?: ShippingDetailsLike | null } | null;
+  }).shipping_details;
+
+  const collectedShippingDetails = (session as Stripe.Checkout.Session & {
+    collected_information?: { shipping_details?: ShippingDetailsLike | null } | null;
+  }).collected_information?.shipping_details;
+
+  const customerDetails = session.customer_details
+    ? {
+        name: session.customer_details.name,
+        email: session.customer_details.email,
+        phone: session.customer_details.phone,
+        address: session.customer_details.address,
+      }
+    : null;
+
+  const recipient = shippingDetails ?? collectedShippingDetails ?? customerDetails;
+  const address = (recipient?.address ?? null) as ShippingAddressLike | null;
+
+  return {
+    name: recipient?.name ?? null,
+    email: recipient?.email ?? null,
+    phone: recipient?.phone ?? null,
+    address1: address?.line1 ?? null,
+    address2: address?.line2 ?? null,
+    city: address?.city ?? null,
+    stateCode: address?.administrative_area ?? address?.state ?? null,
+    postalCode: address?.postal_code ?? null,
+    countryCode: address?.country ?? null,
+    source: shippingDetails
+      ? "shipping_details"
+      : collectedShippingDetails
+        ? "collected_information.shipping_details"
+        : customerDetails
+          ? "customer_details"
+          : "none",
+  };
+}
+
 function getPrintfulOrderId(result: unknown) {
   if (result && typeof result === "object") {
     const maybeId = (result as { result?: { id?: unknown } }).result?.id;
@@ -93,7 +152,8 @@ export async function POST({ request }: { request: Request }) {
 
   if (event.type === "checkout.session.completed") {
     try {
-      const session = event.data.object as Stripe.Checkout.Session;
+      const eventSession = event.data.object as Stripe.Checkout.Session;
+      const session = await stripe.checkout.sessions.retrieve(eventSession.id);
       const sessionContext = getSessionContext(session);
 
       if (session.payment_status !== "paid") {
@@ -115,22 +175,26 @@ export async function POST({ request }: { request: Request }) {
         expand: ["data.price.product"]
       });
 
-      const shipping = (session as any).shipping_details ?? session.customer_details;
+      const recipient = getFulfillmentRecipient(session);
 
       if (
-        !shipping?.name ||
-        !shipping?.address?.line1 ||
-        !shipping?.address?.city ||
-        !shipping?.address?.postal_code ||
-        !shipping?.address?.country
+        !recipient.name ||
+        !recipient.address1 ||
+        !recipient.city ||
+        !recipient.postalCode ||
+        !recipient.countryCode
       ) {
         console.error("Missing shipping fields", {
           ...sessionContext,
-          hasName: Boolean(shipping?.name),
-          hasAddress1: Boolean(shipping?.address?.line1),
-          hasCity: Boolean(shipping?.address?.city),
-          hasPostalCode: Boolean(shipping?.address?.postal_code),
-          hasCountry: Boolean(shipping?.address?.country),
+          shippingSource: recipient.source,
+          hasName: Boolean(recipient.name),
+          hasAddress1: Boolean(recipient.address1),
+          hasCity: Boolean(recipient.city),
+          hasPostalCode: Boolean(recipient.postalCode),
+          hasCountry: Boolean(recipient.countryCode),
+          customerDetailsPresent: Boolean(session.customer_details),
+          shippingDetailsPresent: Boolean((session as Stripe.Checkout.Session & { shipping_details?: unknown }).shipping_details),
+          collectedShippingPresent: Boolean((session as Stripe.Checkout.Session & { collected_information?: { shipping_details?: unknown } | null }).collected_information?.shipping_details),
         });
         return new Response("Missing shipping", { status: 200 });
       }
@@ -182,15 +246,15 @@ export async function POST({ request }: { request: Request }) {
           external_id: `stripe_${session.id}`,
           confirm, // draft in dev, auto-confirm in prod
           recipient: {
-            name: shipping?.name,
-            address1: shipping?.address?.line1,
-            address2: shipping?.address?.line2,
-            city: shipping?.address?.city,
-            state_code: shipping?.address?.administrative_area || shipping?.address?.state,
-            country_code: shipping?.address?.country,
-            zip: shipping?.address?.postal_code,
-            email: shipping?.email,
-            phone: shipping?.phone,
+            name: recipient.name,
+            address1: recipient.address1,
+            address2: recipient.address2,
+            city: recipient.city,
+            state_code: recipient.stateCode,
+            country_code: recipient.countryCode,
+            zip: recipient.postalCode,
+            email: recipient.email,
+            phone: recipient.phone,
           },
           items: printfulItems
         })
