@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import Stripe from "stripe";
 import { getVariantKeyByPriceId } from "../../lib/shop-catalog";
 
@@ -105,6 +106,10 @@ function getPrintfulOrderId(result: unknown) {
   return null;
 }
 
+function getPrintfulExternalId(sessionId: string) {
+  return `ggp${createHash("sha256").update(sessionId).digest("hex").slice(0, 29)}`;
+}
+
 const STRIPE_TO_PRINTFUL: Record<string, number> = {
   // Beanie (numeric sync_variant_id values)
   beanie_black: 5209283098,
@@ -166,6 +171,7 @@ export async function POST({ request }: { request: Request }) {
       }
 
       const confirm = import.meta.env.PRINTFUL_CONFIRM === "true";
+      const printfulExternalId = getPrintfulExternalId(session.id);
 
       if (processedSessions.has(session.id)) {
         console.log("Duplicate session ignored", sessionContext);
@@ -250,7 +256,7 @@ export async function POST({ request }: { request: Request }) {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          external_id: `stripe_${session.id}`,
+          external_id: printfulExternalId,
           confirm, // draft in dev, auto-confirm in prod
           recipient: {
             name: recipient.name,
@@ -289,7 +295,7 @@ export async function POST({ request }: { request: Request }) {
           processedSessions.add(session.id);
           console.log("Printful duplicate external_id ignored", {
             ...sessionContext,
-            externalId: `stripe_${session.id}`,
+            externalId: printfulExternalId,
             printfulOrderId: getPrintfulOrderId(result),
           });
           return new Response("Already processed", { status: 200 });
