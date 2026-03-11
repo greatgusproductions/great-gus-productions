@@ -2,112 +2,317 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="Contact Us | Great Gus Productions">
-  <section class="contact">
-    <h1>Contact Us</h1>
-    <p class="contact-intro">
-      Have a question, collaboration idea, or press inquiry?  
-      Send us a message and we’ll get back to you.
-    </p>
+<BaseLayout
+  title="Contact & Support | Great Gus Productions"
+  description="Contact Great Gus Productions for merchandise support, streaming questions, collaborations, press inquiries, or general assistance."
+>
+  <section class="legal-page">
+    <h1>Contact & Support</h1>
 
-    <form
-      name="contact"
-      method="POST"
-      data-netlify="true"
-      netlify-honeypot="bot-field"
-      action="/contact-success"
-      class="contact-form"
-    >
-      <!-- Required hidden field for Netlify -->
-      <input type="hidden" name="form-name" value="contact" />
-
-      <!-- Honeypot (spam protection) -->
-      <p class="hidden">
-        <label>
-          Don’t fill this out: <input name="bot-field" />
-        </label>
+    <div class="legal-content">
+      <p class="contact-intro">
+        Have a question about merchandise, streaming access, collaborations, or press?
+        Send us a message and we’ll get back to you as soon as possible.
       </p>
 
-      <label>
-        Name
-        <input type="text" name="name" required />
-      </label>
+      <h2>What We Can Help With</h2>
+      <ul>
+        <li>Merchandise orders, shipping issues, damaged items, or replacements</li>
+        <li>Streaming subscription questions and Vimeo OTT account access</li>
+        <li>Film inquiries, collaborations, interviews, and press requests</li>
+        <li>General questions about Great Gus Productions</li>
+      </ul>
 
-      <label>
-        Email
-        <input type="email" name="email" required />
-      </label>
+      <h2>Response Time</h2>
+      <p>
+        Most messages are answered within 1–2 business days.
+      </p>
 
-      <label>
-        Message
-        <textarea name="message" rows="6" required></textarea>
-      </label>
+      <form
+        name="contact"
+        method="POST"
+        data-netlify="true"
+        netlify-honeypot="company-name"
+        action="/contact-success/"
+        class="contact-form"
+      >
+        <input type="hidden" name="form-name" value="contact" />
+        <input type="hidden" name="submission-started-at" id="submission-started-at" />
 
-      <button type="submit">Send Message</button>
-    </form>
+        <p class="hidden" aria-hidden="true">
+          <label>
+            Company Name
+            <input name="company-name" tabindex="-1" autocomplete="off" />
+          </label>
+        </p>
+
+        <label>
+          Name
+          <input type="text" name="name" required />
+        </label>
+
+        <label>
+          Email
+          <input type="email" name="email" required />
+        </label>
+
+        <label>
+          Subject
+          <input
+            type="text"
+            name="subject"
+            placeholder="Order issue, streaming help, press inquiry, collaboration, etc."
+          />
+        </label>
+
+        <label>
+          Message
+          <textarea name="message" rows="6" required></textarea>
+        </label>
+
+        <div class="progressive-check" id="progressive-check" hidden>
+          <p class="progressive-check-note">
+            To help protect this form from spam, please complete the quick verification below.
+          </p>
+
+          <label>
+            <span id="security-question">Security Check</span>
+            <input
+              type="text"
+              name="security-answer"
+              id="security-answer"
+              inputmode="numeric"
+              autocomplete="off"
+            />
+          </label>
+        </div>
+
+        <p class="form-note">
+          By sending a message, you agree that we may use your contact information to respond to your inquiry.
+          See our <a href="/privacy/">Privacy Policy</a>.
+        </p>
+
+        <button type="submit">Send Message</button>
+      </form>
+    </div>
   </section>
 
+  <script is:inline>
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.querySelector('form[name="contact"]');
+      if (!(form instanceof HTMLFormElement)) return;
+
+      const startedAtInput = form.querySelector("#submission-started-at");
+      const progressiveCheck = form.querySelector("#progressive-check");
+      const securityQuestion = form.querySelector("#security-question");
+      const securityAnswer = form.querySelector("#security-answer");
+
+      if (
+        !(startedAtInput instanceof HTMLInputElement) ||
+        !(progressiveCheck instanceof HTMLElement) ||
+        !(securityQuestion instanceof HTMLElement) ||
+        !(securityAnswer instanceof HTMLInputElement)
+      ) {
+        return;
+      }
+
+      const STORAGE_KEY = "ggp-contact-anti-spam";
+      const RESET_AFTER_MS = 24 * 60 * 60 * 1000;
+      const CHALLENGE_AFTER_COUNT = 2;
+      const MIN_FILL_MS = 3000;
+      const startedAt = Date.now();
+      let expectedAnswer = "";
+
+      startedAtInput.value = String(startedAt);
+
+      const getState = () => {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) {
+            return { count: 0, firstAttemptAt: Date.now() };
+          }
+
+          const parsed = JSON.parse(raw);
+          const count = Number(parsed?.count) || 0;
+          const firstAttemptAt = Number(parsed?.firstAttemptAt) || Date.now();
+
+          if (Date.now() - firstAttemptAt > RESET_AFTER_MS) {
+            return { count: 0, firstAttemptAt: Date.now() };
+          }
+
+          return { count, firstAttemptAt };
+        } catch {
+          return { count: 0, firstAttemptAt: Date.now() };
+        }
+      };
+
+      const saveState = (state) => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      };
+
+      const setChallengeVisibility = (isVisible) => {
+        progressiveCheck.hidden = !isVisible;
+        securityAnswer.required = isVisible;
+        if (!isVisible) {
+          securityAnswer.value = "";
+        }
+      };
+
+      const buildChallenge = () => {
+        const a = Math.floor(Math.random() * 7) + 2;
+        const b = Math.floor(Math.random() * 7) + 2;
+        expectedAnswer = String(a + b);
+        securityQuestion.textContent = `Security Check: What is ${a} + ${b}?`;
+        setChallengeVisibility(true);
+      };
+
+      const state = getState();
+      if (state.count >= CHALLENGE_AFTER_COUNT) {
+        buildChallenge();
+      } else {
+        setChallengeVisibility(false);
+      }
+
+      form.addEventListener("submit", (event) => {
+        const currentState = getState();
+
+        if (Date.now() - startedAt < MIN_FILL_MS) {
+          event.preventDefault();
+          window.alert("Please wait a moment and try again.");
+          return;
+        }
+
+        if (currentState.count >= CHALLENGE_AFTER_COUNT) {
+          if (!expectedAnswer) {
+            buildChallenge();
+          }
+
+          if (securityAnswer.value.trim() !== expectedAnswer) {
+            event.preventDefault();
+            buildChallenge();
+            securityAnswer.focus();
+            window.alert("Please complete the security check before sending your message.");
+            return;
+          }
+        }
+
+        saveState({
+          count: currentState.count + 1,
+          firstAttemptAt: currentState.firstAttemptAt,
+        });
+      });
+    });
+  </script>
+
   <style>
-    .contact {
-      max-width: 640px;
-      margin: 4rem auto 0;
-      text-align: left;
+    .legal-page {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 4rem 1rem 6rem;
     }
 
-    .contact h1 {
-      font-size: 28px;
-      margin-bottom: 0.5rem;
+    .legal-page h1 {
+      text-align: center;
+      margin-bottom: 3rem;
+      margin-top: 0rem;
+      font-size: 2.4rem;
+      font-weight: 300;
+    }
+
+    .legal-content h2 {
+      color: var(--accent);
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      margin-top: 2.5rem;
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+    }
+
+    .legal-content p,
+    .legal-content li {
+      color: #e6e6e6;
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+
+    .legal-content ul {
+      padding-left: 1.2rem;
     }
 
     .contact-intro {
-      color: #ccc;
       margin-bottom: 2rem;
-      font-size: 14px;
-      line-height: 1.6;
     }
 
     .contact-form {
+      margin-top: 2.5rem;
       display: flex;
       flex-direction: column;
       gap: 1.2rem;
     }
 
-    label {
+    .contact-form label {
       display: flex;
       flex-direction: column;
-      font-size: 13px;
-      color: #ddd;
+      font-size: 0.95rem;
+      color: #e6e6e6;
       gap: 6px;
     }
 
-    input,
-    textarea {
+    .contact-form input,
+    .contact-form textarea {
       background: #000;
       border: 1px solid #444;
       color: #fff;
       padding: 10px;
-      font-size: 14px;
+      font-size: 0.95rem;
       font-family: inherit;
     }
 
-    input:focus,
-    textarea:focus {
+    .contact-form input:focus,
+    .contact-form textarea:focus {
       outline: none;
-      border-color: #fff;
+      border-color: var(--accent);
     }
 
-    button {
+    .progressive-check {
+      padding: 1rem;
+      border: 1px solid #333;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .progressive-check-note {
+      margin: 0 0 0.75rem;
+    }
+
+    .form-note {
+      margin: 0;
+      color: #bdbdbd;
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    .form-note a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .form-note a:hover {
+      text-decoration: underline;
+    }
+
+    .contact-form button {
       margin-top: 1rem;
       align-self: flex-start;
       background: #fff;
       color: #000;
       border: none;
       padding: 10px 18px;
-      font-size: 13px;
+      font-size: 0.9rem;
       cursor: pointer;
     }
 
-    button:hover {
+    .contact-form button:hover {
       opacity: 0.85;
     }
 

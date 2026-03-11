@@ -1,83 +1,221 @@
 ---
-export function getStaticPaths() {
-  return [
-    { params: { slug: "lonely-ponderosa" } },
-    { params: { slug: "luke-444" } }
-  ];
-}
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export const prerender = false;
+
+// Allowlist so people can't try random filenames
+const SCRIPT_SLUGS = new Set(["lonely-ponderosa", "luke-444"]);
 
 const { slug } = Astro.params;
 
-const files = {
-  "lonely-ponderosa": "/scripts/lonely-ponderosa.pdf",
-  "luke-444": "/scripts/luke-444.pdf"
-};
+if (!slug || !SCRIPT_SLUGS.has(slug)) {
+  return new Response("Not found", { status: 404 });
+}
 
-const titles = {
-  "lonely-ponderosa": "The Lonely Ponderosa",
-  "luke-444": "Luke 444"
-};
-
-const pdf = files[slug as keyof typeof files];
-const title = titles[slug as keyof typeof files];
+const pdfUrl = `/scripts/${slug}.pdf`;
 ---
 
-<html>
-<head>
-  <title>{title} | Great Gus Productions</title>
+<BaseLayout title="Script Viewer" robots="noindex, nofollow">
+  <section class="viewer">
+    <div class="viewer-header">
+      <a class="back" href="/about/scripts/">← Back to Scripts</a>
+      <div class="note">Viewing Only</div>
+    </div>
 
-  <style>
-    body {
-      margin:0;
-      background:black;
-      font-family:Helvetica, Arial, sans-serif;
-      color:white;
+    <div class="frame">
+      <div class="viewer-loading" id="viewer-loading">Loading script…</div>
+      <div class="pdf-viewer" id="pdf-viewer" data-pdf-url={pdfUrl} aria-label={`Script PDF: ${slug}`}></div>
+      <noscript>
+        <p class="viewer-fallback">
+          JavaScript is required to view this script inline.
+          <a href={pdfUrl} target="_blank" rel="noreferrer">Open the PDF directly</a>.
+        </p>
+      </noscript>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  import * as pdfjsLib from "pdfjs-dist";
+  import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist";
+  import pdfWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+
+  pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
+
+  const viewer = document.getElementById("pdf-viewer") as HTMLDivElement | null;
+  const loading = document.getElementById("viewer-loading") as HTMLDivElement | null;
+  const pdfUrl = viewer?.dataset.pdfUrl;
+
+  let pdfDocument: PDFDocumentProxy | null = null;
+  let resizeTimer: number | undefined;
+  let renderVersion = 0;
+
+  function setLoading(message: string) {
+    if (loading) {
+      loading.textContent = message;
+      loading.hidden = false;
     }
+  }
 
-    .viewer-header{
-      padding:14px 20px;
-      border-bottom:1px solid #222;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
+  function clearLoading() {
+    if (loading) {
+      loading.hidden = true;
     }
+  }
 
-    .viewer-title{
-      color:#f3d806;
-      font-size:18px;
-      font-weight:300;
+  function getScale(page: PDFPageProxy) {
+    if (!viewer) return 1;
+
+    const baseViewport = page.getViewport({ scale: 1 });
+    const frameRect = viewer.getBoundingClientRect();
+    const usableWidth = Math.max(frameRect.width - 32, 320);
+    const availableHeight = Math.max(window.innerHeight - frameRect.top - 24, 420);
+    const widthScale = usableWidth / baseViewport.width;
+    const heightScale = availableHeight / baseViewport.height;
+
+    return Math.min(widthScale, heightScale);
+  }
+
+  async function renderPage(pageNumber: number, scale: number, version: number) {
+    if (!viewer || !pdfDocument || version !== renderVersion) return;
+
+    const page = await pdfDocument.getPage(pageNumber);
+    if (version !== renderVersion) return;
+
+    const viewport = page.getViewport({ scale });
+    const outputScale = window.devicePixelRatio || 1;
+    const pageContainer = document.createElement("div");
+    pageContainer.className = "pdf-page";
+
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+    if (!context) return;
+
+    canvas.width = Math.floor(viewport.width * outputScale);
+    canvas.height = Math.floor(viewport.height * outputScale);
+    canvas.style.width = `${viewport.width}px`;
+    canvas.style.height = `${viewport.height}px`;
+
+    pageContainer.appendChild(canvas);
+    viewer.appendChild(pageContainer);
+
+    await page.render({
+      canvas,
+      canvasContext: context,
+      viewport,
+      transform: outputScale === 1 ? undefined : [outputScale, 0, 0, outputScale, 0, 0],
+    }).promise;
+  }
+
+  async function renderDocument() {
+    if (!viewer || !pdfUrl) return;
+
+    const version = ++renderVersion;
+    viewer.replaceChildren();
+    viewer.classList.remove("is-ready");
+    setLoading("Loading script…");
+
+    try {
+      if (!pdfDocument) {
+        const task = pdfjsLib.getDocument(pdfUrl);
+        pdfDocument = await task.promise;
+      }
+
+      if (version !== renderVersion || !pdfDocument) return;
+
+      const firstPage = await pdfDocument.getPage(1);
+      if (version !== renderVersion) return;
+
+      const scale = getScale(firstPage);
+      await renderPage(1, scale, version);
+
+      if (version !== renderVersion) return;
+
+      viewer.classList.add("is-ready");
+      clearLoading();
+
+      for (let pageNumber = 2; pageNumber <= pdfDocument.numPages; pageNumber += 1) {
+        await renderPage(pageNumber, scale, version);
+        if (version !== renderVersion) return;
+      }
+    } catch (error) {
+      console.error("[PDF Viewer Error]", error);
+      setLoading("Unable to load this script.");
     }
+  }
 
-    .back-link{
-      color:white;
-      text-decoration:none;
-      opacity:.7;
-    }
+  if (viewer && pdfUrl) {
+    renderDocument();
 
-    .back-link:hover{
-      opacity:1;
-    }
+    window.addEventListener("resize", () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        renderDocument();
+      }, 180);
+    });
+  }
+</script>
 
-    iframe{
-      width:100%;
-      height:calc(100vh - 52px);
-      border:none;
-    }
-  </style>
-</head>
+<style>
+.viewer { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1rem 2.5rem; }
+.viewer-header { display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.75rem; gap: 1rem; flex-wrap: wrap; }
+.back { color: #ffe066; text-decoration: none; font-size: 1.05rem; }
+.back:hover { text-decoration: underline; }
+.note { color: #aaa; font-size: 0.95rem; }
 
-<body oncontextmenu="return false;">
+.frame {
+  background: #111;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+  min-height: 92vh;
+  padding: 1rem;
+}
 
-  <div class="viewer-header">
-    <div class="viewer-title">{title}</div>
-    <a href="/about/scripts" class="back-link">Back</a>
-  </div>
+.viewer-loading,
+.viewer-fallback {
+  min-height: 88vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #d9d9d9;
+  text-align: center;
+  padding: 1rem;
+}
 
-  {pdf ? (
-    <iframe src={`https://docs.google.com/gview?embedded=true&url=https://greatgusproductions.com${pdf}`}></iframe>
-  ) : (
-    <p style="padding:40px;">Script not found.</p>
-  )}
+.viewer-loading[hidden] {
+  display: none;
+}
 
-</body>
-</html>
+.viewer-fallback a {
+  color: #ffe066;
+}
+
+.pdf-viewer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.pdf-viewer.is-ready {
+  opacity: 1;
+}
+
+.pdf-page {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.pdf-page canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.28);
+}
+</style>

@@ -1,0 +1,128 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Return & Refund Policy | Great Gus Productions"
+  description="Return and refund policy for merchandise purchased from Great Gus Productions.">
+  
+  <section class="legal-page">
+    <h1>Return & Refund Policy</h1>
+    <p class="last-updated">Last Updated: March 9, 2026</p>
+
+    <div class="legal-content">
+
+      <h2>Overview</h2>
+      <p>
+        Merchandise sold through Great Gus Productions LLC is produced on demand and
+        fulfilled by our production partner, Printful. Because each item is made
+        specifically after an order is placed, we generally do not accept returns
+        or exchanges for reasons such as incorrect sizing, change of mind, or
+        buyer’s remorse.
+      </p>
+
+      <h2>Damaged, Defective, or Incorrect Items</h2>
+      <p>
+        If your order arrives damaged, defective, or incorrect, please contact us
+        within <strong>7 days of delivery</strong>. Include your order number and
+        clear photos of the issue so we can review the problem and arrange a
+        replacement or refund if appropriate.
+      </p>
+
+      <p>
+        Once the issue is verified, we will work with our fulfillment partner to
+        provide a replacement item or refund where applicable.
+      </p>
+
+      <h2>Lost Packages</h2>
+      <p>
+        If your package appears to be lost in transit, please contact us and we
+        will help investigate the shipment with the carrier. Replacement or
+        refund eligibility will be evaluated on a case-by-case basis.
+      </p>
+
+      <h2>Refund Processing</h2>
+      <p>
+        Approved refunds are processed through our payment processor, Stripe,
+        and will be issued back to the original payment method used at checkout.
+        Depending on your bank or card provider, it may take several business
+        days for the refund to appear on your statement.
+      </p>
+
+      <h2>Shipping Costs</h2>
+      <p>
+        Shipping charges are non-refundable unless the item arrives damaged,
+        defective, or incorrect.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        For any return or refund inquiries, please contact:
+      </p>
+
+      <p>
+        GREAT GUS PRODUCTIONS LLC<br />
+        Washington State<br />
+        <a href="mailto:greatgusproductions@gmail.com">
+          greatgusproductions@gmail.com
+        </a>
+      </p>
+
+      <h2>Policy Updates</h2>
+      <p>
+        This Return & Refund Policy may be updated from time to time without
+        prior notice. The latest version will always be available on this page.
+      </p>
+
+      <h2>Copyright</h2>
+      <p>
+        © 2018–2026 GREAT GUS PRODUCTIONS LLC. All Rights Reserved.
+      </p>
+
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .legal-page {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 4rem 1rem 6rem;
+  }
+
+  .legal-page h1 {
+    text-align: center;
+    margin-bottom: 3rem;
+    font-size: 2.4rem;
+    font-weight: 300;
+  }
+
+  .last-updated {
+    margin-top: -2rem;
+    margin-bottom: 2.5rem;
+    text-align: left;
+    color: #bdbdbd;
+    font-size: 0.9rem;
+  }
+
+  .legal-content h2 {
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+  }
+
+  .legal-content p,
+  .legal-content li {
+    color: #e6e6e6;
+    line-height: 1.7;
+    font-size: 0.95rem;
+  }
+
+  .legal-content ul {
+    padding-left: 1.2rem;
+  }
+</style>

@@ -2,9 +2,10 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="Privacy Policy">
+<BaseLayout title="Terms and Conditions | Great Gus Productions" description="Read the Terms of Use for Great Gus Productions, outlining website usage, intellectual property, merchandise policies, and legal disclaimers.">
   <section class="legal-page">
-    <h1>Privacy Policy</h1>
+    <h1>Terms and Conditions</h1>
+    <p class="last-updated">Last Updated: March 9, 2026</p>
 
     <div class="legal-content">
       <h2>Use of Website</h2>
@@ -21,8 +22,9 @@ and is protected by copyright laws.
 
 <h2>Trademarks</h2>
 <p>
-The names “Great Gus Productions,” “Great Gus,” “GGP,” and all related logos and branding
-are owned by GREAT GUS PRODUCTIONS LLC. Unauthorized use is prohibited.
+The names “GREAT GUS PRODUCTIONS LLC,” “Great Gus Productions,” “Great Gus,” and “GGP,”
+along with related logos and branding, are trademarks or trade names of
+GREAT GUS PRODUCTIONS LLC. Unauthorized use is prohibited.
 </p>
 
 <h2>Films & Streaming</h2>
@@ -33,14 +35,46 @@ screened publicly, or hosted on other platforms without explicit written permiss
 
 <h2>Merchandise & Payments</h2>
 <p>
-Merchandise is fulfilled by Printful with payments processed by Stripe.
-GREAT GUS PRODUCTIONS LLC does not store financial information.
+Merchandise is produced and fulfilled by Printful, with payments securely
+processed by Stripe. GREAT GUS PRODUCTIONS LLC does not store financial
+information.
+</p>
+
+<h2>Returns & Refunds</h2>
+<p>
+Merchandise is produced on demand and fulfilled by Printful. Because items are
+made to order, returns are not accepted for buyer’s remorse, incorrect sizing,
+or change of mind.
+</p>
+
+<p>
+If an item arrives damaged, defective, or incorrect, please contact
+<a href="mailto:greatgusproductions@gmail.com">
+greatgusproductions@gmail.com
+</a>
+within 7 days of delivery with photos of the issue. Eligible issues may
+qualify for a replacement or refund at our discretion.
+</p>
+
+<p>
+Shipping costs are non-refundable unless the product arrives damaged or
+incorrect.
 </p>
 
 <h2>Scripts & Downloadables</h2>
 <p>
 Scripts and downloadable materials are provided for personal reading or evaluation only
 and may not be produced or distributed without written authorization.
+</p>
+
+<h2>Commercial Licensing</h2>
+<p>
+Any commercial licensing, production, adaptation, distribution, exhibition, sale,
+or other exploitation of scripts, film assets, or related materials requires prior
+written permission from GREAT GUS PRODUCTIONS LLC and may be subject to a separate
+license agreement. No commercial rights are granted unless expressly stated in writing.
+Unauthorized commercial use, duplication, or distribution may result in removal requests,
+revocation of access, or other enforcement action.
 </p>
 
 <h2>Limitation of Liability</h2>
@@ -65,7 +99,7 @@ greatgusproductions@gmail.com
 
 <h2>Copyright</h2>
 <p>
-© 2018–2026 Great Gus Productions. All Rights Reserved.
+© 2018–2026 GREAT GUS PRODUCTIONS LLC. All Rights Reserved.
 </p>
 
     </div>
@@ -86,9 +120,18 @@ greatgusproductions@gmail.com
     font-weight: 300;
   }
 
+  .last-updated {
+    margin-top: -2rem;
+    margin-bottom: 2.5rem;
+    text-align: left;
+    color: #bdbdbd;
+    font-size: 0.9rem;
+  }
+
   .legal-content h2 {
     color: var(--accent);
-    font-size: 0.95rem;
+    font-size: 0.85rem;
+    font-weight: 400;
     letter-spacing: 0.08em;
     margin-top: 2.5rem;
     margin-bottom: 0.75rem;

@@ -2,7 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="Cart | Great Gus Productions">
+<BaseLayout title="Cart | Great Gus Productions" robots="noindex, nofollow">
 
 <h1 class="cart-title">My Cart</h1>
 
@@ -11,6 +11,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 <div id="cartSummary" style="display:none;">
   <div class="cart-summary">
     <p>Subtotal: <span id="subtotal">$0.00</span></p>
+    <p class="shipping-zone-note">Shipping: $5.50 first item, $2.20 additional.</p>
   </div>
 </div>
 
@@ -21,13 +22,61 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
 <script is:inline>
 const productImages = {
-  "Great Gus Beanie": "/images/shop/beanie.jpg",
-  "Great Gus Tee": "/images/shop/tee.jpg",
-  "Great Gus Hoodie": "/images/shop/hoodie.jpg",
-  "Great Gus Hat": "/images/shop/hat.jpg"
+  "Great Gus Beanie": "/images/shop/great-gus-beanie-yellow.webp",
+  "Great Gus Tee": "/images/shop/great-gus-tee.webp",
+  "Great Gus Hoodie": "/images/shop/great-gus-hoodie.webp",
+  "Great Gus Hat": "/images/shop/great-gus-hat-black.webp"
 };
 
-let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+const legacyVariantKeyMap = {
+  "price_1T61YDQr2Bps1O2DHGcU8tTa": "beanie_black",
+  "price_1T61YGQr2Bps1O2DB7Ld75TI": "beanie_grey",
+  "price_1T61YSQr2Bps1O2DW12FhmFN": "beanie_yellow",
+  "price_1T61YOQr2Bps1O2D8TI5kkal": "hat_black",
+  "price_1T61YMQr2Bps1O2DlrKElRLg": "hat_grey",
+  "price_1T61YUQr2Bps1O2DqCRNu9YY": "hoodie_s",
+  "price_1T61XgQr2Bps1O2D7uKNUEqE": "hoodie_m",
+  "price_1T61XcQr2Bps1O2DlkCfSXbe": "hoodie_l",
+  "price_1T61XXQr2Bps1O2DVZRso7U6": "hoodie_xl",
+  "price_1T61XRQr2Bps1O2DUZzbUjXL": "hoodie_2xl",
+  "price_1T61Y9Qr2Bps1O2D2P1FHofy": "tee_s",
+  "price_1T61Y6Qr2Bps1O2DgebVOUPN": "tee_m",
+  "price_1T61Y4Qr2Bps1O2DUXAZ7FMS": "tee_l",
+  "price_1T61Y0Qr2Bps1O2DcIGFlVy1": "tee_xl",
+  "price_1T61XxQr2Bps1O2D69cKCO44": "tee_2xl",
+  "price_1T61XnQr2Bps1O2DBXyEchXR": "tee_3xl",
+  "price_1T61XjQr2Bps1O2Duxgi3LoQ": "tee_4xl"
+};
+
+function normalizeCartItem(item){
+  if(!item || typeof item !== "object") return null;
+
+  const variantKey =
+    typeof item.variantKey === "string"
+      ? item.variantKey
+      : typeof item.priceId === "string"
+        ? legacyVariantKeyMap[item.priceId]
+        : undefined;
+
+  if(!variantKey) return null;
+
+  const qty = Number.parseInt(String(item.qty ?? item.quantity ?? 1), 10);
+  const safeQty = Number.isFinite(qty) && qty > 0 ? qty : 1;
+
+  return {
+    ...item,
+    key: variantKey,
+    variantKey,
+    qty: safeQty,
+  };
+}
+
+let cart = JSON.parse(localStorage.getItem("cart") || "[]")
+  .map(normalizeCartItem)
+  .filter(Boolean);
+
+localStorage.setItem("cart", JSON.stringify(cart));
+
 const container = document.getElementById("cartContainer");
 const summaryContainer = document.getElementById("cartSummary");
 
@@ -109,7 +158,7 @@ async function checkout(){
   spinner.style.display = "inline-block";
 
   const items = cart.map(item => ({
-    price: item.priceId,
+    variantKey: item.variantKey,
     quantity: item.qty
   }));
 
@@ -233,6 +282,14 @@ render();
   text-align:right;
   font-size:16px;
   font-weight:bold;
+}
+
+.shipping-zone-note{
+  margin:10px 0 0;
+  color:#bbb;
+  font-size:13px;
+  line-height:1.5;
+  font-weight:normal;
 }
 
 .checkout-btn{

@@ -1,9 +1,27 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { toCanonicalUrl } from "../lib/url-format.js";
+
 const trailerId = "-e2YhWVKSGY";
+const canonicalUrl = toCanonicalUrl(Astro.url.pathname, Astro.site ?? Astro.url);
+
+const ld = {
+  "@context": "https://schema.org",
+  "@type": "Movie",
+  "name": "The Powwow (2025)",
+  "description": "A family of Native filmmakers attend a powwow and share perspectives on Native music, dance, drums, and culture.",
+  "image": new URL('/images/posters/the-powwow-official-poster.webp', Astro.site ?? Astro.url).toString(),
+  "url": canonicalUrl,
+  "datePublished": "2025"
+};
 ---
 
-<BaseLayout title="The Powwow (2025)">
+<BaseLayout
+  title="The Powwow (2025) | GGP"
+  description="Explore The Powwow, a 2025 film by Great Gus Productions. A moving story of tradition, family, and the ties that bind us across generations."
+  ogImage="/images/posters/the-powwow-official-poster.webp"
+  ogImageAlt="The Powwow official poster"
+>
 
 <section class="film-hero fade-in">
 
@@ -11,7 +29,7 @@ const trailerId = "-e2YhWVKSGY";
 
     <div class="video-thumb" role="button" tabindex="0" data-id={trailerId}>
       <img 
-        src="/images/thumbnails/the-powwow-thumb.png"
+        src="/images/thumbnails/the-powwow-official-trailer.webp"
         alt="The Powwow Trailer"
         loading="eager"
       />
@@ -73,7 +91,7 @@ const trailerId = "-e2YhWVKSGY";
 
       <div class="panel-content">
 
-        <img class="poster" src="/images/posters/powwow-poster.png" alt="Poster" />
+        <img class="poster" src="/images/posters/the-powwow-official-poster.webp" alt="The Powwow official poster" />
 
         <div class="panel-text">
 
@@ -160,6 +178,10 @@ const trailerId = "-e2YhWVKSGY";
 
 </section>
 
+<script type="application/ld+json">
+{JSON.stringify(ld)}
+</script>
+
 
 <section class="film-details fade-in">
 
@@ -176,18 +198,13 @@ const trailerId = "-e2YhWVKSGY";
   <div class="reviews-center">
     <a 
       class="reviews-btn"
-      href="/the-powwow-reviews"
+      href="/the-powwow-reviews/"
       target="_blank"
     >
       External Reviews
     </a>
   </div>
 
-</section>
-
-
-<section class="film-comments fade-in">
-  <div id="disqus_thread"></div>
 </section>
 
 
@@ -233,24 +250,6 @@ if(closeBtn && panel){
   });
 
 });
-</script>
-
-
-<script>
-  var disqus_config = function () {
-  // @ts-ignore
-  this.page.url = window.location.href;
-  // @ts-ignore
-  this.page.identifier = "the-powwow";
-};
-
-
-  (function() {
-    var d = document, s = d.createElement('script');
-    s.src = 'https://greatgusproductions.disqus.com/embed.js';
-    s.setAttribute('data-timestamp', Date.now().toString());
-    (d.head || d.body).appendChild(s);
-  })();
 </script>
 
 
@@ -471,21 +470,6 @@ if(closeBtn && panel){
   color:var(--accent);
   text-decoration:none;
   font-family:'Overlock',cursive;
-}
-
-.film-comments{
-  max-width:960px;
-  margin:130px auto 110px auto;
-  text-align:center;
-}
-
-#disqus_thread{
-  max-width:960px;
-  margin:0 auto;
-}
-
-#disqus_thread img{
-  filter:grayscale(100%) brightness(.9);
 }
 
 /* PANEL INSIDE VIDEO */

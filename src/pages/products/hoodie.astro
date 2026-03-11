@@ -1,19 +1,41 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { toCanonicalUrl } from "../../lib/url-format.js";
+
+const canonicalUrl = toCanonicalUrl(Astro.url.pathname, Astro.site ?? Astro.url);
+const ld = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Great Gus Hoodie",
+  "image": new URL('/images/shop/great-gus-hoodie.webp', Astro.site ?? Astro.url).toString(),
+  "description": "Cozy up in the official Great Gus Productions hoodie. Soft, organic, and perfect for film lovers.",
+  "url": canonicalUrl,
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": "USD",
+    "price": "65",
+    "availability": "https://schema.org/InStock"
+  }
+};
 ---
 
-<BaseLayout title="Great Gus Hoodie">
+<BaseLayout
+  title="Great Gus Hoodie"
+  description="Cozy up in the official Great Gus Productions hoodie. Soft, organic, and perfect for film lovers who want to support creative projects."
+  ogImage="/images/shop/great-gus-hoodie.webp"
+  ogImageAlt="Great Gus Hoodie product photo"
+>
 
 <div class="product-wrapper">
 
   <div class="product-image">
     <!-- main display image -->
-    <img id="mainImage" src="/images/shop/hoodie.jpg" alt="Great Gus Hoodie">
+    <img id="mainImage" src="/images/shop/great-gus-hoodie.webp" alt="Great Gus Hoodie">
     <!-- thumbnails to cycle images -->
     <div class="thumbnails">
-      <img src="/images/shop/hoodie.jpg" data-src="/images/shop/hoodie.jpg" alt="Hoodie 1" class="active-thumb">
-      <img src="/images/shop/hoodie-2.jpg" data-src="/images/shop/hoodie-2.jpg" alt="Hoodie 2">
-      <img src="/images/shop/hoodie-3.jpg" data-src="/images/shop/hoodie-3.jpg" alt="Hoodie 3">
+      <img src="/images/shop/great-gus-hoodie.webp" data-src="/images/shop/great-gus-hoodie.webp" alt="Great Gus Hoodie 1" class="active-thumb">
+      <img src="/images/shop/great-gus-hoodie-2.webp" data-src="/images/shop/great-gus-hoodie-2.webp" alt="Great Gus Hoodie 2">
+      <img src="/images/shop/great-gus-hoodie-3.webp" data-src="/images/shop/great-gus-hoodie-3.webp" alt="Great Gus Hoodie 3">
     </div>
   </div>
 
@@ -47,12 +69,12 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 </div>
 
 <script is:inline>
-const priceMap = {
-  "S": "price_1T61YUQr2Bps1O2DqCRNu9YY", 
-  "M": "price_1T61XgQr2Bps1O2D7uKNUEqE",
-  "L": "price_1T61XcQr2Bps1O2DlkCfSXbe",
-  "XL": "price_1T61XXQr2Bps1O2DVZRso7U6",
-  "2XL": "price_1T61XRQr2Bps1O2DUZzbUjXL"
+const variantMap = {
+  "S": "hoodie_s", 
+  "M": "hoodie_m",
+  "L": "hoodie_l",
+  "XL": "hoodie_xl",
+  "2XL": "hoodie_2xl"
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -76,12 +98,17 @@ function addToCart(){
   let cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
   const size = document.getElementById("sizeSelect").value;
-  const priceId = priceMap[size];
+  const variantKey = variantMap[size];
+
+  if(!variantKey){
+    alert("Variant not found.");
+    return;
+  }
 
   let qty = parseInt(document.getElementById("qtyInput").value, 10);
   if(isNaN(qty) || qty < 1) qty = 1;
 
-  const key = priceId;
+  const key = variantKey;
 
   const existing = cart.find(i => i.key === key);
 
@@ -90,7 +117,7 @@ function addToCart(){
   } else {
     cart.push({
       key,
-      priceId,
+      variantKey,
       name:`Great Gus Hoodie (${size})`,
       price:65,
       qty
@@ -233,5 +260,11 @@ input[type="number"]::-webkit-inner-spin-button {
   }
 }
 </style>
+
+<script type="application/ld+json">
+{JSON.stringify(ld)}
+</script>
+
+</BaseLayout>
 
 </BaseLayout>

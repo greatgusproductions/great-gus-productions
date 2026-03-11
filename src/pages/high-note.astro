@@ -1,9 +1,27 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { toCanonicalUrl } from "../lib/url-format.js";
+
 const trailerId = "EpitfgZRKjA";
+const canonicalUrl = toCanonicalUrl(Astro.url.pathname, Astro.site ?? Astro.url);
+
+const ld = {
+  "@context": "https://schema.org",
+  "@type": "Movie",
+  "name": "High Note (2019)",
+  "description": "Best friends Cliff and Otis intend to get rich quick by stealing from some of the most dangerous foes in the business. A dramedy musical about friendship and unexpected consequences.",
+  "image": new URL('/images/posters/high-note-official-poster.webp', Astro.site ?? Astro.url).toString(),
+  "url": canonicalUrl,
+  "datePublished": "2019"
+};
 ---
 
-<BaseLayout title="High Note (2019)">
+<BaseLayout
+  title="High Note (2019) | GGP"
+  description="Discover High Note, a 2019 film from Great Gus Productions. Follow a heartfelt story of music, dreams, and the power of finding your own voice."
+  ogImage="/images/posters/high-note-official-poster.webp"
+  ogImageAlt="High Note official poster"
+>
 
 <section class="film-hero fade-in">
 
@@ -11,7 +29,7 @@ const trailerId = "EpitfgZRKjA";
 
     <div class="video-thumb" role="button" tabindex="0" data-id={trailerId}>
       <img 
-        src="/images/thumbnails/high-note-thumb.jpg"
+        src="/images/thumbnails/high-note-official-trailer.jpg"
         alt="High Note Trailer"
         loading="eager"
       />
@@ -62,7 +80,7 @@ const trailerId = "EpitfgZRKjA";
 
       <div class="panel-content">
 
-        <img class="poster" src="/images/posters/high-note-poster.jpg" alt="Poster" />
+        <img class="poster" src="/images/posters/high-note-official-poster.webp" alt="High Note official poster" />
 
         <div class="panel-text">
 
@@ -143,6 +161,10 @@ const trailerId = "EpitfgZRKjA";
 
 </section>
 
+<script type="application/ld+json">
+{JSON.stringify(ld)}
+</script>
+
 
 <section class="film-details fade-in">
 
@@ -159,18 +181,13 @@ const trailerId = "EpitfgZRKjA";
   <div class="reviews-center">
     <a 
       class="reviews-btn"
-      href="/high-note-reviews"
+      href="/high-note-reviews/"
       target="_blank"
     >
       External Reviews
     </a>
   </div>
 
-</section>
-
-
-<section class="film-comments fade-in">
-  <div id="disqus_thread"></div>
 </section>
 
 
@@ -216,24 +233,6 @@ if(closeBtn && panel){
   });
 
 });
-</script>
-
-
-<script>
-  var disqus_config = function () {
-  // @ts-ignore
-  this.page.url = window.location.href;
-  // @ts-ignore
-  this.page.identifier = "high-note";
-};
-
-
-  (function() {
-    var d = document, s = d.createElement('script');
-    s.src = 'https://greatgusproductions.disqus.com/embed.js';
-    s.setAttribute('data-timestamp', Date.now().toString());
-    (d.head || d.body).appendChild(s);
-  })();
 </script>
 
 
@@ -444,21 +443,6 @@ if(closeBtn && panel){
   color:var(--accent);
   text-decoration:none;
   font-family:'Overlock',cursive;
-}
-
-.film-comments{
-  max-width:960px;
-  margin:130px auto 110px auto;
-  text-align:center;
-}
-
-#disqus_thread{
-  max-width:960px;
-  margin:0 auto;
-}
-
-#disqus_thread img{
-  filter:grayscale(100%) brightness(.9);
 }
 
 /* PANEL INSIDE VIDEO */

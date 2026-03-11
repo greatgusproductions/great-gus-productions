@@ -1,9 +1,27 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { toCanonicalUrl } from "../lib/url-format.js";
+
 const trailerId = "C1m6VqW01qc";
+const canonicalUrl = toCanonicalUrl(Astro.url.pathname, Astro.site ?? Astro.url);
+
+const ld = {
+  "@context": "https://schema.org",
+  "@type": "Movie",
+  "name": "Beyond the Shadows (2021)",
+  "description": "Ghosts aren't real. That's why Drexler Faust and his Beyond the Shadows crew fake them for their show. This time the ghosts are real.",
+  "image": new URL('/images/posters/beyond-the-shadows-official-poster.webp', Astro.site ?? Astro.url).toString(),
+  "url": canonicalUrl,
+  "datePublished": "2021"
+};
 ---
 
-<BaseLayout title="Beyond the Shadows (2021)">
+<BaseLayout
+  title="Beyond the Shadows (2021) | GGP"
+  description="Watch Beyond the Shadows, a 2021 film by Great Gus Productions. Experience a haunting journey into the unknown, crafted by emerging filmmakers."
+  ogImage="/images/posters/beyond-the-shadows-official-poster.webp"
+  ogImageAlt="Beyond the Shadows official poster"
+>
 
 <section class="film-hero fade-in">
 
@@ -11,7 +29,7 @@ const trailerId = "C1m6VqW01qc";
 
     <div class="video-thumb" role="button" tabindex="0" data-id={trailerId}>
       <img 
-        src="/images/thumbnails/bts-thumb.jpg" 
+        src="/images/thumbnails/beyond-the-shadows-official-trailer.webp" 
         alt="Beyond the Shadows Trailer"
         loading="eager"
       />
@@ -62,7 +80,7 @@ const trailerId = "C1m6VqW01qc";
 
       <div class="panel-content">
 
-        <img class="poster" src="/images/posters/bts-poster.jpg" alt="Poster" />
+        <img class="poster" src="/images/posters/beyond-the-shadows-official-poster.webp" alt="Beyond the Shadows official poster" />
 
         <div class="panel-text">
 
@@ -133,6 +151,10 @@ const trailerId = "C1m6VqW01qc";
 
 </section>
 
+<script type="application/ld+json">
+{JSON.stringify(ld)}
+</script>
+
 
 <section class="film-details fade-in">
 
@@ -149,18 +171,13 @@ const trailerId = "C1m6VqW01qc";
   <div class="reviews-center">
     <a 
       class="reviews-btn"
-      href="/beyond-the-shadows-reviews"
+      href="/beyond-the-shadows-reviews/"
       target="_blank"
     >
       External Reviews
     </a>
   </div>
 
-</section>
-
-
-<section class="film-comments fade-in">
-  <div id="disqus_thread"></div>
 </section>
 
 
@@ -206,24 +223,6 @@ if(closeBtn && panel){
   });
 
 });
-</script>
-
-
-<script>
-  var disqus_config = function () {
-  // @ts-ignore
-  this.page.url = window.location.href;
-  // @ts-ignore
-  this.page.identifier = "beyond-the-shadows";
-};
-
-
-  (function() {
-    var d = document, s = d.createElement('script');
-    s.src = 'https://greatgusproductions.disqus.com/embed.js';
-    s.setAttribute('data-timestamp', Date.now().toString());
-    (d.head || d.body).appendChild(s);
-  })();
 </script>
 
 
@@ -441,21 +440,6 @@ if(closeBtn && panel){
   color:var(--accent);
   text-decoration:none;
   font-family:'Overlock',cursive;
-}
-
-.film-comments{
-  max-width:960px;
-  margin:130px auto 110px auto;
-  text-align:center;
-}
-
-#disqus_thread{
-  max-width:960px;
-  margin:0 auto;
-}
-
-#disqus_thread img{
-  filter:grayscale(100%) brightness(.9);
 }
 
 /* PANEL INSIDE VIDEO */

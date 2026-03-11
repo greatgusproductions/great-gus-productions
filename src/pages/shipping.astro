@@ -1,0 +1,127 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Shipping Policy | Great Gus Productions"
+  description="Shipping information for merchandise orders from Great Gus Productions.">
+
+<section class="legal-page">
+<h1>Shipping Policy</h1>
+<p class="last-updated">Last Updated: March 9, 2026</p>
+
+<div class="legal-content">
+
+<h2>Order Processing</h2>
+<p>
+All merchandise is produced on demand and fulfilled by our production partner,
+Printful. Orders typically take 2–5 business days to be produced before they
+are shipped.
+</p>
+
+<h2>Shipping Times</h2>
+<p>
+Once shipped, delivery times vary by destination. Domestic orders often arrive
+within 5–10 business days, while international delivery can take longer based on
+destination country, customs processing, and carrier conditions.
+</p>
+
+<h2>Shipping Rates</h2>
+<p>
+Shipping rates are calculated at checkout. Standard shipping is currently
+$5.50 for the first item and $2.20 for each additional item within the same
+order.
+</p>
+
+<h2>International Shipping</h2>
+<p>
+Printful ships merchandise orders worldwide, and our checkout now accepts shipping
+addresses across Stripe-supported destinations.
+</p>
+<p>
+For orders shipped outside the United States, customers may be responsible
+for customs duties, import taxes, VAT, brokerage fees, or other charges imposed by the destination country.
+Unless otherwise stated at checkout, these charges are not included in the purchase price or shipping total
+and are the responsibility of the recipient.
+</p>
+
+<h2>Tracking</h2>
+<p>
+Once your order ships, you will receive a tracking number via email so you
+can monitor delivery progress.
+</p>
+
+<h2>Shipping Issues</h2>
+<p>
+If your package is lost, delayed, or arrives damaged, please contact us so
+we can assist in resolving the issue with the shipping carrier or fulfillment
+partner.
+</p>
+
+<h2>Contact</h2>
+<p>
+If you have questions regarding shipping, order delivery, or merchandise issues,
+please contact:
+</p>
+
+<p>
+GREAT GUS PRODUCTIONS LLC<br />
+Washington State<br />
+<a href="mailto:greatgusproductions@gmail.com">
+greatgusproductions@gmail.com
+</a>
+</p>
+
+<h2>Copyright</h2>
+<p>
+© 2018–2026 GREAT GUS PRODUCTIONS LLC. All Rights Reserved.
+</p>
+
+</div>
+</section>
+
+</BaseLayout>
+
+<style>
+  .legal-page {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 4rem 1rem 6rem;
+  }
+
+  .legal-page h1 {
+    text-align: center;
+    margin-bottom: 3rem;
+    font-size: 2.4rem;
+    font-weight: 300;
+  }
+
+  .last-updated {
+    margin-top: -2rem;
+    margin-bottom: 2.5rem;
+    text-align: left;
+    color: #bdbdbd;
+    font-size: 0.9rem;
+  }
+
+  .legal-content h2 {
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+  }
+
+  .legal-content p,
+  .legal-content li {
+    color: #e6e6e6;
+    line-height: 1.7;
+    font-size: 0.95rem;
+  }
+
+  .legal-content ul {
+    padding-left: 1.2rem;
+  }
+</style>

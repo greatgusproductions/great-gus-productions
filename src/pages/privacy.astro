@@ -2,17 +2,18 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="Privacy Policy">
+<BaseLayout title="Privacy Policy | Great Gus Productions" description="Read the Great Gus Productions privacy policy covering contact forms, checkout processing, Printful fulfillment, cookies, and limited data collection practices.">
   <section class="legal-page">
     <h1>Privacy Policy</h1>
+    <p class="last-updated">Last Updated: March 9, 2026</p>
 
     <div class="legal-content">
       <h2>Type of Information We Collect</h2>
 <p>
 GREAT GUS PRODUCTIONS LLC may collect personal information you voluntarily provide,
 including your name, email address, and message content when you contact us.
-We may also collect non-personal data such as browser type, device information,
-and general site usage analytics.
+      We may also collect limited technical information such as browser type, device information,
+      and basic site activity needed to operate, secure, and improve the website.
 </p>
 
 <h2>How We Collect Information</h2>
@@ -20,6 +21,53 @@ and general site usage analytics.
 Information is collected when you submit forms, send messages through our website,
 or interact with site features. Payment transactions are handled entirely by
 third-party providers and are not stored on our servers.
+</p>
+
+<h2>Contact Forms</h2>
+<p>
+If you submit the contact form on this website, we may collect your name,
+email address, and the message content you provide.
+</p>
+<p>
+Contact form submissions are processed through Netlify Forms and are used only
+to respond to inquiries and provide customer support.
+</p>
+<p>
+We retain contact form submissions only for as long as reasonably necessary to
+respond to your inquiry, maintain business records, and comply with legal obligations.
+</p>
+<p>
+We do not sell, rent, or share contact information submitted through the contact
+form for marketing purposes.
+</p>
+
+<h2>Cart & Browser Storage</h2>
+<p>
+If you add merchandise to your cart, this website may store cart information in your browser
+using local storage so your selected items remain available while you continue shopping.
+Cart information may remain in your browser until you remove the item, clear your cart,
+clear your browser storage, or proceed through checkout.
+</p>
+
+<h2>Orders, Checkout & Fulfillment</h2>
+<p>
+If you place a merchandise order, your checkout and payment information is processed securely by Stripe.
+To fulfill and ship your order, order details such as your name, shipping address, email address,
+phone number if provided, and purchased items may be shared with our fulfillment partner, Printful.
+GREAT GUS PRODUCTIONS LLC does not store full payment card information.
+</p>
+
+<h2>Cookies, Analytics & Marketing Tools</h2>
+<p>
+We do not currently use first-party advertising cookies, Meta Pixel, Google Analytics,
+email marketing tracking, newsletter tracking, or similar marketing technologies on this website.
+If our services or legal obligations ever require us to implement such tools in the future,
+we will update this Privacy Policy and handle any related information with reasonable security measures.
+</p>
+<p>
+Some third-party services used by this website, such as Stripe, Printful, Vimeo OTT, YouTube embeds, Disqus comments,
+or hosted fonts and media providers, may collect technical information or use their own cookies or similar technologies
+subject to their own privacy policies and platform terms.
 </p>
 
 <h2>Why We Collect Information</h2>
@@ -42,9 +90,9 @@ GREAT GUS PRODUCTIONS LLC does not sell, rent, trade, or share personal informat
 for monetary or commercial purposes.
 </p>
 <p>
-For transparency, we provide a link titled
-<strong>“We Do Not Sell Personal Information.”</strong>
-This link directs users to this Privacy Policy, which clearly explains our data practices.
+For transparency, we provide a separate
+<a href="/we-do-not-sell/">We Do Not Sell Personal Information</a>
+page that explains this practice directly.
 No opt-out mechanism is required because we do not sell personal data.
 </p>
 
@@ -68,6 +116,11 @@ greatgusproductions@gmail.com
 </a>
 </p>
 
+<h2>Copyright</h2>
+<p>
+© 2018–2026 GREAT GUS PRODUCTIONS LLC. All Rights Reserved.
+</p>
+
     </div>
   </section>
 </BaseLayout>
@@ -86,9 +139,18 @@ greatgusproductions@gmail.com
     font-weight: 300;
   }
 
+  .last-updated {
+    margin-top: -2rem;
+    margin-bottom: 2.5rem;
+    text-align: left;
+    color: #bdbdbd;
+    font-size: 0.9rem;
+  }
+
   .legal-content h2 {
     color: var(--accent);
-    font-size: 0.95rem;
+    font-size: 0.85rem;
+    font-weight: 400;
     letter-spacing: 0.08em;
     margin-top: 2.5rem;
     margin-bottom: 0.75rem;

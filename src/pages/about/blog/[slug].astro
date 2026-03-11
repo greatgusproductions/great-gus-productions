@@ -1,0 +1,92 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { getCollection, type CollectionEntry } from "astro:content";
+import { toCanonicalUrl } from "../../../lib/url-format.js";
+
+type Props = {
+  post: CollectionEntry<"blog">;
+};
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props as Props;
+const { Content } = await post.render();
+const canonicalUrl = toCanonicalUrl(`/about/blog/${post.slug}/`, Astro.site ?? Astro.url);
+
+// Use excerpt if present, otherwise fallback to a generic line
+const description =
+  (post.data.excerpt && post.data.excerpt.trim()) ||
+  "Read the latest from Great Gus Productions.";
+
+// Use the post image if present, otherwise let BaseLayout default handle it
+const ogImage = post.data.image || undefined;
+---
+
+<BaseLayout
+  title={post.data.title}
+  description={description}
+  ogImage={ogImage}
+  ogType="article"
+  canonicalUrl={canonicalUrl}
+>
+  <article class="blog-detail">
+    <div class="blog-detail-meta">
+      <span>{post.data.author}</span>
+      <span>
+        {post.data.date.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })}
+      </span>
+      {post.data.readTime ? <span>• {post.data.readTime}</span> : null}
+    </div>
+
+    <h1 class="blog-detail-title">{post.data.title}</h1>
+
+    <div class="blog-detail-content">
+      <Content />
+    </div>
+
+    <a href="/about/blog/" class="back-link">← Back to Blog</a>
+  </article>
+</BaseLayout>
+
+<style>
+.blog-detail { max-width: 900px; margin: 0 auto; padding: 2rem 1rem 2.5rem 1rem; color: #fff; }
+.blog-detail-meta { display: flex; gap: 1.2rem; color: #bbb; font-size: 1rem; margin-bottom: 0.7rem; }
+.blog-detail-title { font-size: 2rem; font-weight: 300; margin: 0.5rem 0 1.2rem 0; }
+
+.blog-detail-img {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #111;
+  border-radius: 20px;
+  margin: 2rem auto 2.5rem auto;
+  padding: 2rem 0;
+  width: 100%;
+  max-width: 900px;
+  box-sizing: border-box;
+}
+.blog-detail-img img { width: 100%; height: auto; max-height: 420px; object-fit: contain; border-radius: 12px; display: block; }
+
+.blog-detail-content :global(p) { margin-bottom: 1.3em; font-size: 1.22rem; line-height: 1.6; }
+.blog-detail-content :global(h2) { font-size: 1.7rem; font-weight: 500; margin: 2.2rem 0 1.2rem 0; color: #f6d75c; line-height: 1.2; }
+
+.blog-detail-content :global(img) {
+  display: block;
+  max-width: 680px;   /* controls size */
+  width: 100%;
+  height: auto;
+  margin: 2rem auto;  /* centers it */
+  border-radius: 12px;
+}
+
+.back-link { color: #ffe066; text-decoration: none; font-size: 1.1rem; }
+.back-link:hover { text-decoration: underline; }
+</style>

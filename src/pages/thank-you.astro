@@ -2,7 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="Thank You">
+<BaseLayout title="Thank You" robots="noindex, nofollow">
 
 <h1 style="text-align:center;margin-top:4rem;">
 Thank you for your order!
@@ -11,9 +11,5 @@ Thank you for your order!
 <p style="text-align:center;">
 You will receive a confirmation email shortly.
 </p>
-
-<script is:inline>
-localStorage.removeItem("cart");
-</script>
 
 </BaseLayout>

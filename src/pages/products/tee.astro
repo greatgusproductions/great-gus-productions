@@ -1,19 +1,41 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { toCanonicalUrl } from "../../lib/url-format.js";
+
+const canonicalUrl = toCanonicalUrl(Astro.url.pathname, Astro.site ?? Astro.url);
+const ld = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Great Gus Tee",
+  "image": new URL('/images/shop/great-gus-tee.webp', Astro.site ?? Astro.url).toString(),
+  "description": "Official Great Gus Productions tee made from organic cotton.",
+  "url": canonicalUrl,
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": "USD",
+    "price": "35",
+    "availability": "https://schema.org/InStock"
+  }
+};
 ---
 
-<BaseLayout title="Great Gus Tee">
+<BaseLayout
+  title="Great Gus Tee"
+  description="Show your support for Great Gus Productions with our official tee. Made from organic cotton, this shirt is soft, comfortable, and perfect for film fans."
+  ogImage="/images/shop/great-gus-tee.webp"
+  ogImageAlt="Great Gus Tee product photo"
+>
 
 <div class="product-wrapper">
 
   <div class="product-image">
     <!-- main display image -->
-    <img id="mainImage" src="/images/shop/tee.jpg" alt="Great Gus Tee">
+    <img id="mainImage" src="/images/shop/great-gus-tee.webp" alt="Great Gus Tee">
     <!-- thumbnails to cycle images -->
     <div class="thumbnails">
-      <img src="/images/shop/tee.jpg" data-src="/images/shop/tee.jpg" alt="Tee 1" class="active-thumb">
-      <img src="/images/shop/tee-2.jpg" data-src="/images/shop/tee-2.jpg" alt="Tee 2">
-      <img src="/images/shop/tee-3.jpg" data-src="/images/shop/tee-3.jpg" alt="Tee 3">
+      <img src="/images/shop/great-gus-tee.webp" data-src="/images/shop/great-gus-tee.webp" alt="Great Gus Tee 1" class="active-thumb">
+      <img src="/images/shop/great-gus-tee-2.webp" data-src="/images/shop/great-gus-tee-2.webp" alt="Great Gus Tee 2">
+      <img src="/images/shop/great-gus-tee-3.jpg" data-src="/images/shop/great-gus-tee-3.jpg" alt="Great Gus Tee 3">
     </div>
   </div>
 
@@ -49,14 +71,14 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 </div>
 
 <script is:inline>
-const priceMap = {
-  "S": "price_1T61Y9Qr2Bps1O2D2P1FHofy",
-  "M": "price_1T61Y6Qr2Bps1O2DgebVOUPN",
-  "L": "price_1T61Y4Qr2Bps1O2DUXAZ7FMS",
-  "XL": "price_1T61Y0Qr2Bps1O2DcIGFlVy1",
-  "2XL": "price_1T61XxQr2Bps1O2D69cKCO44",
-  "3XL": "price_1T61XnQr2Bps1O2DBXyEchXR",
-  "4XL": "price_1T61XjQr2Bps1O2Duxgi3LoQ"
+const variantMap = {
+  "S": "tee_s",
+  "M": "tee_m",
+  "L": "tee_l",
+  "XL": "tee_xl",
+  "2XL": "tee_2xl",
+  "3XL": "tee_3xl",
+  "4XL": "tee_4xl"
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -80,12 +102,17 @@ function addToCart(){
   let cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
   const size = document.getElementById("sizeSelect").value;
-  const priceId = priceMap[size];
+  const variantKey = variantMap[size];
+
+  if(!variantKey){
+    alert("Variant not found.");
+    return;
+  }
 
   let qty = parseInt(document.getElementById("qtyInput").value, 10);
   if(isNaN(qty) || qty < 1) qty = 1;
 
-  const key = priceId;
+  const key = variantKey;
 
   const existing = cart.find(i => i.key === key);
 
@@ -94,7 +121,7 @@ function addToCart(){
   } else {
     cart.push({
       key,
-      priceId,
+      variantKey,
       name:`Great Gus Tee (${size})`,
       price:35,
       qty
@@ -237,5 +264,9 @@ input[type="number"]::-webkit-inner-spin-button {
   }
 }
 </style>
+
+<script type="application/ld+json">
+{JSON.stringify(ld)}
+</script>
 
 </BaseLayout>

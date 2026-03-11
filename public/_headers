@@ -1,0 +1,23 @@
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+/api/*
+  Cache-Control: no-store
+
+/checkout
+  Cache-Control: no-store
+
+/stripe-webhook
+  Cache-Control: no-store
+
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/scripts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/*
+  Cache-Control: public, max-age=60

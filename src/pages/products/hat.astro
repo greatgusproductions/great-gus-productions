@@ -1,19 +1,41 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { toCanonicalUrl } from "../../lib/url-format.js";
+
+const canonicalUrl = toCanonicalUrl(Astro.url.pathname, Astro.site ?? Astro.url);
+const ld = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Great Gus Hat",
+  "image": new URL('/images/shop/great-gus-hat-black.webp', Astro.site ?? Astro.url).toString(),
+  "description": "Top off your look with the Great Gus Productions hat. Durable, adjustable, and a must-have for supporters of indie film.",
+  "url": canonicalUrl,
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": "USD",
+    "price": "29",
+    "availability": "https://schema.org/InStock"
+  }
+};
 ---
 
-<BaseLayout title="Great Gus Hat">
+<BaseLayout
+  title="Great Gus Hat"
+  description="Top off your look with the Great Gus Productions hat. Durable, adjustable, and a must-have for supporters of indie film and creative storytelling."
+  ogImage="/images/shop/great-gus-hat-black.webp"
+  ogImageAlt="Great Gus Hat product photo"
+>
 
 <div class="product-wrapper">
 
   <div class="product-image">
     <!-- main display image -->
-    <img id="mainImage" src="/images/shop/hat.jpg" alt="Great Gus Hat">
+    <img id="mainImage" src="/images/shop/great-gus-hat-black.webp" alt="Great Gus Hat">
     <!-- thumbnails to cycle images -->
     <div class="thumbnails">
-      <img src="/images/shop/hat.jpg" data-src="/images/shop/hat.jpg" alt="Hat 1" class="active-thumb">
-      <img src="/images/shop/hat-2.jpg" data-src="/images/shop/hat-2.jpg" alt="Hat 2">
-      <img src="/images/shop/hat-3.jpg" data-src="/images/shop/hat-3.jpg" alt="Hat 3">
+      <img src="/images/shop/great-gus-hat-black.webp" data-src="/images/shop/great-gus-hat-black.webp" alt="Hat 1" class="active-thumb">
+      <img src="/images/shop/great-gus-hat-black-2.webp" data-src="/images/shop/great-gus-hat-black-2.webp" alt="Hat 2">
+      <img src="/images/shop/great-gus-hat-grey.webp" data-src="/images/shop/great-gus-hat-grey.webp" alt="Hat 3">
     </div>
   </div>
 
@@ -44,9 +66,9 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 </div>
 
 <script is:inline>
-const priceMap = {
-  "Black": "price_1T61YOQr2Bps1O2D8TI5kkal",
-  "Grey": "price_1T61YMQr2Bps1O2DlrKElRLg"
+const variantMap = {
+  "Black": "hat_black",
+  "Grey": "hat_grey"
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -70,9 +92,9 @@ function addToCart(){
   let cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
   const color = document.getElementById("colorSelect").value;
-  const priceId = priceMap[color];
+  const variantKey = variantMap[color];
 
-  if(!priceId){
+  if(!variantKey){
     alert("Variant not found.");
     return;
   }
@@ -80,7 +102,7 @@ function addToCart(){
   let qty = parseInt(document.getElementById("qtyInput").value, 10);
   if(isNaN(qty) || qty < 1) qty = 1;
 
-  const key = priceId;
+  const key = variantKey;
 
   const existing = cart.find(i => i.key === key);
 
@@ -89,7 +111,7 @@ function addToCart(){
   } else {
     cart.push({
       key,
-      priceId,
+      variantKey,
       name:`Great Gus Hat (${color})`,
       price:29,
       qty
@@ -232,5 +254,11 @@ input[type="number"]::-webkit-inner-spin-button {
   }
 }
 </style>
+
+<script type="application/ld+json">
+{JSON.stringify(ld)}
+</script>
+
+</BaseLayout>
 
 </BaseLayout>

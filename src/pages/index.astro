@@ -2,17 +2,35 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="Great Gus Productions">
+<BaseLayout
+  title="Great Gus Productions"
+  description="Discover original films, scripts, and creative projects from Great Gus Productions. Explore our latest releases and join our filmmaking journey."
+  preloadImages={["/images/thumbnails/beyond-the-shadows-official-teaser.jpg", "/images/thumbnails/the-powwow-official-teaser.webp"]}
+>
+
+  <!-- Visually-hidden H1 and crawlable internal links for SEO (kept off-screen) -->
+  <div class="visually-hidden">
+    <h1>Great Gus Productions — Films, Shop, Blog, Scripts</h1>
+    <nav aria-hidden="false">
+      <a href="/the-powwow/">The Powwow</a>
+      <a href="/beyond-the-shadows/">Beyond the Shadows</a>
+      <a href="/high-note/">High Note</a>
+      <a href="/about/shop/">Shop</a>
+      <a href="/about/blog/">Blog</a>
+      <a href="/about/scripts/">Scripts</a>
+    </nav>
+  </div>
+
   <section style="text-align:center;">
     <div class="hero-logo">
       <img
-        src="/images/ggp-film-logo.jpg"
+        src="/images/ggp-film-logo.webp"
         alt="Great Gus Productions Film Logo"
 		class="logo-desktop"
       />
 
 	  <img
-    src="/images/ggp-film-logo-mobile.jpg"
+    src="/images/ggp-film-logo-mobile.webp"
     alt="Great Gus Productions Film Logo"
     class="logo-mobile"
   />
@@ -21,18 +39,18 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
   <section class="video-grid">
     {[
-      { id: "C1m6VqW01qc", thumb: "/images/thumbnails/1t.jpg" },
-      { id: "-e2YhWVKSGY", thumb: "/images/thumbnails/2t.jpg" },
-      { id: "EpitfgZRKjA", thumb: "/images/thumbnails/3t.jpg" },
-      { id: "DTtNxdlicTc", thumb: "/images/thumbnails/4t.jpg" },
-      { id: "X30yUNbF9Q4", thumb: "/images/thumbnails/5t.jpg" },
-      { id: "V2J5x8Mvo9s", thumb: "/images/thumbnails/6t.jpg" },
-      { id: "mMlXYVMUce8", thumb: "/images/thumbnails/7t.jpg" },
-      { id: "HXZwlom_PFI", thumb: "/images/thumbnails/8t.jpg" },
+      { id: "C1m6VqW01qc", thumb: "/images/thumbnails/beyond-the-shadows-official-teaser.jpg", alt: "Beyond the Shadows trailer thumbnail" },
+      { id: "-e2YhWVKSGY", thumb: "/images/thumbnails/the-powwow-official-teaser.webp", alt: "The Powwow trailer thumbnail" },
+      { id: "EpitfgZRKjA", thumb: "/images/thumbnails/high-note-official-teaser.jpg", alt: "High Note trailer thumbnail" },
+      { id: "DTtNxdlicTc", thumb: "/images/thumbnails/beyond-the-shadows-official-teaser-2.jpg", alt: "Beyond the Shadows teaser 2 thumbnail" },
+      { id: "X30yUNbF9Q4", thumb: "/images/thumbnails/high-note-official-teaser-2.webp", alt: "High Note teaser 2 thumbnail" },
+      { id: "V2J5x8Mvo9s", thumb: "/images/thumbnails/high-note-moonshine-and-maryjane.jpg", alt: "High Note: Moonshine and Maryjane thumbnail" },
+      { id: "mMlXYVMUce8", thumb: "/images/thumbnails/ghost-of-mchenry.jpg", alt: "Ghost of McHenry thumbnail" },
+      { id: "HXZwlom_PFI", thumb: "/images/thumbnails/beyond-the-shadows-opening-scene.jpg", alt: "Beyond the Shadows opening scene thumbnail" },
     ].map((video) => (
       <div class="video-item">
-        <button class="video-thumb" data-id={video.id} aria-label="Play video">
-          <img src={video.thumb} alt="Video thumbnail" loading="lazy" />
+        <button class="video-thumb" data-id={video.id} aria-label={`Play ${video.alt}`}>
+          <img src={video.thumb} alt={video.alt} loading="lazy" />
         </button>
       </div>
     ))}
@@ -132,5 +150,20 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   }
 }
 
+  </style>
+
+  <style>
+    .visually-hidden {
+      position: absolute !important;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .visually-hidden a { color: inherit; }
   </style>
 </BaseLayout>
