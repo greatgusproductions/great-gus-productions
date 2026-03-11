@@ -170,7 +170,7 @@ export async function POST({ request }: { request: Request }) {
         return new Response("Not paid", { status: 200 });
       }
 
-      const confirm = import.meta.env.PRINTFUL_CONFIRM === "true";
+      const confirm = import.meta.env.PROD || import.meta.env.PRINTFUL_CONFIRM === "true";
       const printfulExternalId = getPrintfulExternalId(session.id);
 
       if (processedSessions.has(session.id)) {
@@ -257,7 +257,7 @@ export async function POST({ request }: { request: Request }) {
         },
         body: JSON.stringify({
           external_id: printfulExternalId,
-          confirm, // draft in dev, auto-confirm in prod
+          confirm,
           recipient: {
             name: recipient.name,
             address1: recipient.address1,
