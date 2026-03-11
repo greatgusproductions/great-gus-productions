@@ -1,6 +1,7 @@
 export const MAX_CHECKOUT_ITEM_QTY = 10;
 
 export type ShopVariant = {
+  variantKey?: string;
   stripePriceId: string;
   productName: string;
   variantLabel: string;
@@ -124,9 +125,17 @@ export const SHOP_VARIANTS: Record<string, ShopVariant> = {
 };
 
 const SHOP_VARIANT_MAP = new Map<string, ShopVariant>(Object.entries(SHOP_VARIANTS));
+const SHOP_VARIANT_KEY_BY_PRICE_ID = new Map<string, string>(
+  Object.entries(SHOP_VARIANTS).map(([variantKey, variant]) => [variant.stripePriceId, variantKey])
+);
 
 export function getShopVariant(key: string): ShopVariant | null {
-  return SHOP_VARIANT_MAP.get(key) ?? null;
+  const variant = SHOP_VARIANT_MAP.get(key);
+  return variant ? { ...variant, variantKey: key } : null;
+}
+
+export function getVariantKeyByPriceId(priceId: string): string | null {
+  return SHOP_VARIANT_KEY_BY_PRICE_ID.get(priceId) ?? null;
 }
 
 export function buildValidatedCheckoutLineItems(items: CheckoutRequestItem[]): {

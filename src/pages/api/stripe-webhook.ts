@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import { getVariantKeyByPriceId } from "../../lib/shop-catalog";
 
 const processedSessions = new Set<string>();
 
@@ -202,10 +203,12 @@ export async function POST({ request }: { request: Request }) {
       const printfulItems = lineItems.data
         .map((item) => {
           const product = item.price?.product as Stripe.Product | null;
+          const priceId = item.price?.id ?? "";
 
           const variantKey =
             (item.price?.metadata?.printful_variant_key as string) ||
             (product?.metadata?.printful_variant_key as string) ||
+            getVariantKeyByPriceId(priceId) ||
             "";
 
           const variantId = STRIPE_TO_PRINTFUL[variantKey];
@@ -213,6 +216,8 @@ export async function POST({ request }: { request: Request }) {
           if (!variantKey || !variantId) {
             console.error("Missing Printful mapping", {
               ...sessionContext,
+              priceId: priceId || "unknown",
+              description: item.description || "unknown",
               variantKey: variantKey || "unknown",
             });
             return null;
