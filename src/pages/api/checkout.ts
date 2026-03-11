@@ -80,7 +80,7 @@ export async function POST({ request }: { request: Request }) {
         },
       ],
 
-      success_url: "https://greatgusproductions.com/thank-you/",
+      success_url: "https://greatgusproductions.com/thank-you/?session_id={CHECKOUT_SESSION_ID}",
       cancel_url: "https://greatgusproductions.com/cart/",
     });
 

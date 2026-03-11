@@ -12,4 +12,22 @@ Thank you for your order!
 You will receive a confirmation email shortly.
 </p>
 
+<script is:inline>
+document.addEventListener("DOMContentLoaded", () => {
+	const params = new URLSearchParams(window.location.search);
+	const sessionId = params.get("session_id");
+
+	if (!sessionId) {
+		return;
+	}
+
+	localStorage.removeItem("cart");
+
+	document.querySelectorAll(".cartCount").forEach((badge) => {
+		badge.style.display = "none";
+		badge.textContent = "";
+	});
+});
+</script>
+
 </BaseLayout>
