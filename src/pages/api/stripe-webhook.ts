@@ -150,7 +150,7 @@ async function postNetlifyFormNotification(
   fields: Record<string, string | number | null | undefined>
 ) {
   try {
-    const formUrl = new URL("/ops-notifications/", request.url);
+    const formUrl = new URL("/", request.url);
     const body = new URLSearchParams();
     body.set("form-name", formName);
 
@@ -163,6 +163,7 @@ async function postNetlifyFormNotification(
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "text/html,application/xhtml+xml",
       },
       body: body.toString(),
     });
@@ -245,8 +246,18 @@ export async function POST({ request }: { request: Request }) {
         return new Response("Not paid", { status: 200 });
       }
 
-      const confirm = import.meta.env.PRINTFUL_CONFIRM === "true";
+      const confirmEnv = import.meta.env.PRINTFUL_CONFIRM;
+      const confirm = confirmEnv === "false"
+        ? false
+        : import.meta.env.PROD || confirmEnv === "true";
       const printfulExternalId = getPrintfulExternalId(session.id);
+
+      console.log("Printful confirm mode", {
+        ...sessionContext,
+        confirm,
+        confirmEnv: typeof confirmEnv === "string" ? confirmEnv : null,
+        isProd: import.meta.env.PROD,
+      });
 
       if (processedSessions.has(session.id)) {
         console.log("Duplicate session ignored", sessionContext);
