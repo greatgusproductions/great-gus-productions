@@ -7,6 +7,7 @@ const SITEMAP_EXCLUDED_PATHS = new Set([
   "/cart",
   "/thank-you",
   "/contact-success",
+  "/ops-notifications",
 ]);
 
 export default defineConfig({

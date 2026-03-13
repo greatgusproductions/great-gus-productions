@@ -7,6 +7,18 @@ const processedSessions = new Set<string>();
 export const prerender = false;
 
 const stripe = new Stripe(import.meta.env.STRIPE_SECRET_KEY as string);
+const PRINTFUL_SUBMITTED_STATUSES = new Set([
+  "pending",
+  "inreview",
+  "inprocess",
+  "partial",
+  "fulfilled",
+]);
+const PRINTFUL_ATTENTION_STATUSES = new Set([
+  "draft",
+  "failed",
+  "onhold",
+]);
 
 function getSafeErrorDetails(error: unknown) {
   if (error && typeof error === "object") {
@@ -106,6 +118,69 @@ function getPrintfulOrderId(result: unknown) {
   return null;
 }
 
+function getPrintfulOrderStatus(result: unknown) {
+  if (result && typeof result === "object") {
+    const maybeStatus = (result as { result?: { status?: unknown } }).result?.status;
+    return typeof maybeStatus === "string" ? maybeStatus : null;
+  }
+
+  return null;
+}
+
+function getPrintfulHeaders(contentType = "application/json") {
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${import.meta.env.PRINTFUL_API_KEY}`,
+  };
+
+  if (contentType) {
+    headers["Content-Type"] = contentType;
+  }
+
+  const storeId = import.meta.env.PRINTFUL_STORE_ID;
+  if (typeof storeId === "string" && storeId.trim()) {
+    headers["X-PF-Store-Id"] = storeId.trim();
+  }
+
+  return headers;
+}
+
+async function postNetlifyFormNotification(
+  request: Request,
+  formName: "order-created" | "order-issue",
+  fields: Record<string, string | number | null | undefined>
+) {
+  try {
+    const formUrl = new URL("/ops-notifications/", request.url);
+    const body = new URLSearchParams();
+    body.set("form-name", formName);
+
+    for (const [key, value] of Object.entries(fields)) {
+      if (value === null || value === undefined || value === "") continue;
+      body.set(key, String(value));
+    }
+
+    const response = await fetch(formUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: body.toString(),
+    });
+
+    if (!response.ok) {
+      console.error("Netlify notification form failed", {
+        formName,
+        status: response.status,
+      });
+    }
+  } catch (error) {
+    console.error("Netlify notification form error", {
+      formName,
+      ...getSafeErrorDetails(error),
+    });
+  }
+}
+
 function getPrintfulExternalId(sessionId: string) {
   return `ggp${createHash("sha256").update(sessionId).digest("hex").slice(0, 29)}`;
 }
@@ -203,6 +278,17 @@ export async function POST({ request }: { request: Request }) {
           shippingDetailsPresent: Boolean((session as Stripe.Checkout.Session & { shipping_details?: unknown }).shipping_details),
           collectedShippingPresent: Boolean((session as Stripe.Checkout.Session & { collected_information?: { shipping_details?: unknown } | null }).collected_information?.shipping_details),
         });
+
+        await postNetlifyFormNotification(request, "order-issue", {
+          timestamp: new Date().toISOString(),
+          event_type: "missing_shipping",
+          session_id: session.id,
+          payment_intent_id: sessionContext.paymentIntentId,
+          recipient_country: recipient.countryCode,
+          recipient_state: recipient.stateCode,
+          details: "Missing one or more shipping fields needed for Printful fulfillment.",
+        });
+
         return new Response("Missing shipping", { status: 200 });
       }
 
@@ -238,6 +324,15 @@ export async function POST({ request }: { request: Request }) {
 
       if (printfulItems.length === 0) {
         console.error("No valid Printful items, skipping order", sessionContext);
+
+        await postNetlifyFormNotification(request, "order-issue", {
+          timestamp: new Date().toISOString(),
+          event_type: "no_valid_items",
+          session_id: session.id,
+          payment_intent_id: sessionContext.paymentIntentId,
+          details: "Webhook could not map Stripe checkout items to Printful variants.",
+        });
+
         return new Response("No valid items", { status: 200 });
       }
 
@@ -251,10 +346,7 @@ export async function POST({ request }: { request: Request }) {
 
       const response = await fetch("https://api.printful.com/orders", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${import.meta.env.PRINTFUL_API_KEY}`,
-          "Content-Type": "application/json"
-        },
+        headers: getPrintfulHeaders(),
         body: JSON.stringify({
           external_id: printfulExternalId,
           confirm,
@@ -308,17 +400,149 @@ export async function POST({ request }: { request: Request }) {
           errorMessage: safePrintfulMessage,
         });
 
+        await postNetlifyFormNotification(request, "order-issue", {
+          timestamp: new Date().toISOString(),
+          event_type: "printful_create_failed",
+          session_id: session.id,
+          payment_intent_id: sessionContext.paymentIntentId,
+          printful_order_id: getPrintfulOrderId(result),
+          error_message: safePrintfulMessage,
+          recipient_country: recipient.countryCode,
+          recipient_state: recipient.stateCode,
+          variant_ids: printfulItems.map((item) => item.sync_variant_id).join(", "),
+        });
+
         // Return 200 so Stripe doesn't keep retrying the webhook
         return new Response(`Printful failed: ${safePrintfulMessage}`, { status: 200 });
       }
 
+      const printfulOrderId = getPrintfulOrderId(result);
+      const createdStatus = getPrintfulOrderStatus(result);
+      let finalStatus = createdStatus;
+
       console.log("Printful order created", {
         ...sessionContext,
-        printfulOrderId: getPrintfulOrderId(result),
+        printfulOrderId,
+        createdStatus,
       });
+
+      if (confirm && finalStatus === "draft" && printfulOrderId) {
+        console.warn("Printful order stayed draft after create; attempting confirm", {
+          ...sessionContext,
+          printfulOrderId,
+          createdStatus,
+        });
+
+        const confirmResponse = await fetch(
+          `https://api.printful.com/orders/${encodeURIComponent(String(printfulOrderId))}/confirm`,
+          {
+            method: "POST",
+            headers: getPrintfulHeaders(""),
+          }
+        );
+
+        const confirmResult = await confirmResponse.json().catch(() => null);
+        const confirmedStatus = getPrintfulOrderStatus(confirmResult);
+        finalStatus = confirmedStatus ?? finalStatus;
+
+        if (!confirmResponse.ok) {
+          const safeConfirmMessage =
+            typeof confirmResult === "object" &&
+            confirmResult &&
+            typeof (confirmResult as { error?: { message?: unknown } }).error?.message === "string"
+              ? (confirmResult as { error?: { message?: string } }).error?.message
+              : "Printful confirm request failed";
+
+          console.error("Printful draft confirm failed", {
+            ...sessionContext,
+            printfulOrderId,
+            status: confirmResponse.status,
+            createdStatus,
+            finalStatus,
+            errorMessage: safeConfirmMessage,
+          });
+
+          await postNetlifyFormNotification(request, "order-issue", {
+            timestamp: new Date().toISOString(),
+            event_type: "printful_confirm_failed",
+            session_id: session.id,
+            payment_intent_id: sessionContext.paymentIntentId,
+            printful_order_id: printfulOrderId,
+            printful_status: finalStatus,
+            error_message: safeConfirmMessage,
+            recipient_country: recipient.countryCode,
+            recipient_state: recipient.stateCode,
+            variant_ids: printfulItems.map((item) => item.sync_variant_id).join(", "),
+          });
+
+          return new Response(`Printful confirm failed: ${safeConfirmMessage}`, { status: 200 });
+        }
+
+        console.log("Printful draft confirm completed", {
+          ...sessionContext,
+          printfulOrderId,
+          createdStatus,
+          finalStatus,
+        });
+      }
+
+      if (finalStatus && PRINTFUL_ATTENTION_STATUSES.has(finalStatus)) {
+        console.warn("Printful order needs attention", {
+          ...sessionContext,
+          printfulOrderId,
+          createdStatus,
+          finalStatus,
+        });
+
+        await postNetlifyFormNotification(request, "order-issue", {
+          timestamp: new Date().toISOString(),
+          event_type: "printful_needs_attention",
+          session_id: session.id,
+          payment_intent_id: sessionContext.paymentIntentId,
+          printful_order_id: printfulOrderId,
+          printful_status: finalStatus,
+          recipient_country: recipient.countryCode,
+          recipient_state: recipient.stateCode,
+          variant_ids: printfulItems.map((item) => item.sync_variant_id).join(", "),
+          details: "Printful created the order, but it still needs manual attention.",
+        });
+      } else if (finalStatus && PRINTFUL_SUBMITTED_STATUSES.has(finalStatus)) {
+        await postNetlifyFormNotification(request, "order-created", {
+          timestamp: new Date().toISOString(),
+          event_type: "printful_submitted",
+          session_id: session.id,
+          payment_intent_id: sessionContext.paymentIntentId,
+          printful_order_id: printfulOrderId,
+          printful_status: finalStatus,
+          recipient_country: recipient.countryCode,
+          recipient_state: recipient.stateCode,
+          variant_ids: printfulItems.map((item) => item.sync_variant_id).join(", "),
+        });
+      } else {
+        await postNetlifyFormNotification(request, "order-issue", {
+          timestamp: new Date().toISOString(),
+          event_type: "printful_unknown_status",
+          session_id: session.id,
+          payment_intent_id: sessionContext.paymentIntentId,
+          printful_order_id: printfulOrderId,
+          printful_status: finalStatus,
+          recipient_country: recipient.countryCode,
+          recipient_state: recipient.stateCode,
+          variant_ids: printfulItems.map((item) => item.sync_variant_id).join(", "),
+          details: "Printful returned an unexpected order status.",
+        });
+      }
+
       processedSessions.add(session.id);
     } catch (err) {
       console.error("Webhook fulfillment error", getSafeErrorDetails(err));
+
+      await postNetlifyFormNotification(request, "order-issue", {
+        timestamp: new Date().toISOString(),
+        event_type: "webhook_fulfillment_error",
+        error_message: getSafeErrorDetails(err).errorMessage,
+      });
+
       return new Response("Fulfillment error", { status: 200 });
     }
   }

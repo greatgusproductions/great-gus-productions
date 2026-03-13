@@ -1,0 +1,39 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+export const prerender = true;
+---
+
+<BaseLayout title="Operations Notifications | Great Gus Productions" robots="noindex, nofollow">
+  <section style="display:none;" aria-hidden="true">
+    <form name="order-created" method="POST" data-netlify="true" action="/ops-notifications/">
+      <input type="hidden" name="form-name" value="order-created" />
+      <input type="text" name="timestamp" />
+      <input type="text" name="event_type" />
+      <input type="text" name="session_id" />
+      <input type="text" name="payment_intent_id" />
+      <input type="text" name="printful_order_id" />
+      <input type="text" name="printful_status" />
+      <input type="text" name="variant_ids" />
+      <input type="text" name="recipient_country" />
+      <input type="text" name="recipient_state" />
+      <textarea name="details"></textarea>
+      <textarea name="error_message"></textarea>
+    </form>
+
+    <form name="order-issue" method="POST" data-netlify="true" action="/ops-notifications/">
+      <input type="hidden" name="form-name" value="order-issue" />
+      <input type="text" name="timestamp" />
+      <input type="text" name="event_type" />
+      <input type="text" name="session_id" />
+      <input type="text" name="payment_intent_id" />
+      <input type="text" name="printful_order_id" />
+      <input type="text" name="printful_status" />
+      <input type="text" name="variant_ids" />
+      <input type="text" name="recipient_country" />
+      <input type="text" name="recipient_state" />
+      <textarea name="details"></textarea>
+      <textarea name="error_message"></textarea>
+    </form>
+  </section>
+</BaseLayout>
