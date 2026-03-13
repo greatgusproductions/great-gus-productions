@@ -1,12 +1,16 @@
 import { createHash } from "node:crypto";
+import { Resend } from "resend";
 import Stripe from "stripe";
 import { getVariantKeyByPriceId } from "../../lib/shop-catalog";
 
 const processedSessions = new Set<string>();
+const OPS_ALERT_FROM = "notifications@greatgusproductions.com";
+const OPS_ALERT_TO = "greatgusproductions@gmail.com";
 
 export const prerender = false;
 
 const stripe = new Stripe(import.meta.env.STRIPE_SECRET_KEY as string);
+const resend = new Resend(import.meta.env.RESEND_API_KEY as string);
 const PRINTFUL_SUBMITTED_STATUSES = new Set([
   "pending",
   "inreview",
@@ -144,39 +148,52 @@ function getPrintfulHeaders(contentType = "application/json") {
   return headers;
 }
 
-async function postNetlifyFormNotification(
-  request: Request,
-  formName: "order-created" | "order-issue",
+function escapeHtml(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+async function sendOpsAlertEmail(
+  subject: string,
   fields: Record<string, string | number | null | undefined>
 ) {
   try {
-    const formUrl = new URL("/", request.url);
-    const body = new URLSearchParams();
-    body.set("form-name", formName);
+    const rows = Object.entries(fields)
+      .filter(([, value]) => value !== null && value !== undefined && value !== "")
+      .map(
+        ([key, value]) =>
+          `<tr><td style="padding:6px 12px;border:1px solid #ddd;font-weight:600;vertical-align:top;">${escapeHtml(key)}</td><td style="padding:6px 12px;border:1px solid #ddd;">${escapeHtml(String(value))}</td></tr>`
+      )
+      .join("");
 
-    for (const [key, value] of Object.entries(fields)) {
-      if (value === null || value === undefined || value === "") continue;
-      body.set(key, String(value));
-    }
-
-    const response = await fetch(formUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Accept: "text/html,application/xhtml+xml",
-      },
-      body: body.toString(),
+    const { error } = await resend.emails.send({
+      from: `Great Gus Productions <${OPS_ALERT_FROM}>`,
+      to: [OPS_ALERT_TO],
+      subject,
+      html: `
+        <div style="font-family:Arial,sans-serif;line-height:1.5;color:#111;">
+          <h2 style="margin-bottom:12px;">${escapeHtml(subject)}</h2>
+          <table style="border-collapse:collapse;border:1px solid #ddd;">
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      `,
     });
 
-    if (!response.ok) {
-      console.error("Netlify notification form failed", {
-        formName,
-        status: response.status,
+    if (error) {
+      console.error("Resend ops email failed", {
+        subject,
+        errorMessage: error.message,
+        errorName: error.name,
       });
     }
   } catch (error) {
-    console.error("Netlify notification form error", {
-      formName,
+    console.error("Resend ops email error", {
+      subject,
       ...getSafeErrorDetails(error),
     });
   }
@@ -290,7 +307,7 @@ export async function POST({ request }: { request: Request }) {
           collectedShippingPresent: Boolean((session as Stripe.Checkout.Session & { collected_information?: { shipping_details?: unknown } | null }).collected_information?.shipping_details),
         });
 
-        await postNetlifyFormNotification(request, "order-issue", {
+        await sendOpsAlertEmail("Printful order issue: missing shipping", {
           timestamp: new Date().toISOString(),
           event_type: "missing_shipping",
           session_id: session.id,
@@ -336,7 +353,7 @@ export async function POST({ request }: { request: Request }) {
       if (printfulItems.length === 0) {
         console.error("No valid Printful items, skipping order", sessionContext);
 
-        await postNetlifyFormNotification(request, "order-issue", {
+        await sendOpsAlertEmail("Printful order issue: no valid items", {
           timestamp: new Date().toISOString(),
           event_type: "no_valid_items",
           session_id: session.id,
@@ -411,7 +428,7 @@ export async function POST({ request }: { request: Request }) {
           errorMessage: safePrintfulMessage,
         });
 
-        await postNetlifyFormNotification(request, "order-issue", {
+        await sendOpsAlertEmail("Printful order issue: create failed", {
           timestamp: new Date().toISOString(),
           event_type: "printful_create_failed",
           session_id: session.id,
@@ -473,7 +490,7 @@ export async function POST({ request }: { request: Request }) {
             errorMessage: safeConfirmMessage,
           });
 
-          await postNetlifyFormNotification(request, "order-issue", {
+          await sendOpsAlertEmail("Printful order issue: confirm failed", {
             timestamp: new Date().toISOString(),
             event_type: "printful_confirm_failed",
             session_id: session.id,
@@ -505,7 +522,7 @@ export async function POST({ request }: { request: Request }) {
           finalStatus,
         });
 
-        await postNetlifyFormNotification(request, "order-issue", {
+        await sendOpsAlertEmail(`Printful order needs attention: ${finalStatus}`, {
           timestamp: new Date().toISOString(),
           event_type: "printful_needs_attention",
           session_id: session.id,
@@ -518,19 +535,14 @@ export async function POST({ request }: { request: Request }) {
           details: "Printful created the order, but it still needs manual attention.",
         });
       } else if (finalStatus && PRINTFUL_SUBMITTED_STATUSES.has(finalStatus)) {
-        await postNetlifyFormNotification(request, "order-created", {
-          timestamp: new Date().toISOString(),
-          event_type: "printful_submitted",
-          session_id: session.id,
-          payment_intent_id: sessionContext.paymentIntentId,
-          printful_order_id: printfulOrderId,
-          printful_status: finalStatus,
-          recipient_country: recipient.countryCode,
-          recipient_state: recipient.stateCode,
-          variant_ids: printfulItems.map((item) => item.sync_variant_id).join(", "),
+        console.log("Printful order submitted without ops email", {
+          ...sessionContext,
+          printfulOrderId,
+          createdStatus,
+          finalStatus,
         });
       } else {
-        await postNetlifyFormNotification(request, "order-issue", {
+        await sendOpsAlertEmail("Printful order issue: unknown status", {
           timestamp: new Date().toISOString(),
           event_type: "printful_unknown_status",
           session_id: session.id,
@@ -548,7 +560,7 @@ export async function POST({ request }: { request: Request }) {
     } catch (err) {
       console.error("Webhook fulfillment error", getSafeErrorDetails(err));
 
-      await postNetlifyFormNotification(request, "order-issue", {
+      await sendOpsAlertEmail("Printful webhook fulfillment error", {
         timestamp: new Date().toISOString(),
         event_type: "webhook_fulfillment_error",
         error_message: getSafeErrorDetails(err).errorMessage,

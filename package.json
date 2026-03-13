@@ -12,6 +12,7 @@
     "@astrojs/sitemap": "^3.7.0",
     "astro": "^5.17.1",
     "pdfjs-dist": "^5.5.207",
+    "resend": "^6.9.3",
     "stripe": "^20.3.1"
   },
   "devDependencies": {
