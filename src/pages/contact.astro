@@ -277,6 +277,19 @@ export const prerender = true;
       border-color: var(--accent);
     }
 
+    .contact-form input:-webkit-autofill,
+    .contact-form input:-webkit-autofill:hover,
+    .contact-form input:-webkit-autofill:focus,
+    .contact-form textarea:-webkit-autofill,
+    .contact-form textarea:-webkit-autofill:hover,
+    .contact-form textarea:-webkit-autofill:focus {
+      -webkit-text-fill-color: #fff;
+      -webkit-box-shadow: 0 0 0 1000px #000 inset;
+      box-shadow: 0 0 0 1000px #000 inset;
+      transition: background-color 9999s ease-in-out 0s;
+      caret-color: #fff;
+    }
+
     .progressive-check {
       padding: 1rem;
       border: 1px solid #333;
