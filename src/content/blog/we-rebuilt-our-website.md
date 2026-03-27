@@ -4,7 +4,7 @@ date: "2026-03-26"
 author: "GGP"
 readTime: "17 min read"
 image: "/images/blog/we-rebuilt-our-website.webp"
-excerpt: "We rebuilt the Great Gus Productions website from scratch to leave Wix behind, cut costs, and take full control of our films, shop, blog, and scripts."
+excerpt: "Hello, fellow humans! We have a couple updates for you before, you know, World War III officially begins. First off, we released The Powwow here on our website."
 ---
 
 Hello, fellow humans! We have a couple updates for you before, you know, World War III officially begins. First off, we released The Powwow here on our website. We made posts about it on our social medias, but we figured we should mention it here in the blog. You should check it out. It was great. And secondly, we rebuilt our website entirely from scratch.
