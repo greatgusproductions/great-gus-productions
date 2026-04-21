@@ -2,7 +2,7 @@
 title: "We Rebuilt Our Website"
 date: "2026-03-26"
 author: "GGP"
-readTime: "17 min read"
+readTime: "10 min read"
 image: "/images/blog/we-rebuilt-our-website.webp"
 excerpt: "Hello, fellow humans! We have a couple updates for you before, you know, World War III officially begins. First off, we released The Powwow here on our website."
 ---
